@@ -1,7 +1,7 @@
 import { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi";
 import express, { type Router } from "express";
 import { z } from "zod";
-import { GetUserSchema, UserSchema } from "@/api/user/userModel";
+import { CreateUserSchema, DeleteUserSchema, GetUserSchema, UserSchema } from "@/api/user/userModel";
 import { createApiResponse } from "@/api-docs/openAPIResponseBuilders";
 import { validateRequest } from "@/common/utils/httpHandlers";
 import { userController } from "./userController";
@@ -29,3 +29,23 @@ userRegistry.registerPath({
 });
 
 userRouter.get("/:id", validateRequest(GetUserSchema), userController.getUser);
+
+userRegistry.registerPath({
+	method: "post",
+	path: "/users",
+	tags: ["User"],
+	request: { body: { content: { "application/json": { schema: CreateUserSchema.shape.body } } } },
+	responses: createApiResponse(UserSchema, "Success"),
+});
+
+userRouter.post("/", validateRequest(CreateUserSchema), userController.createUser);
+
+userRegistry.registerPath({
+	method: "delete",
+	path: "/users/{id}",
+	tags: ["User"],
+	request: { params: DeleteUserSchema.shape.params },
+	responses: createApiResponse(z.null(), "Success"),
+});
+
+userRouter.delete("/:id", validateRequest(DeleteUserSchema), userController.deleteUser);
