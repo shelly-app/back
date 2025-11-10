@@ -13,33 +13,113 @@ vi.mock("@/database/database", () => {
 		},
 	];
 
+	const mockPets = [
+		{
+			id: 1,
+			name: "Max",
+			birthdate: "2020-01-15",
+			breed: "Golden Retriever",
+			species_id: 1,
+			sex_id: 1,
+			status_id: 1,
+			size_id: 2,
+			description: "Friendly dog",
+			shelter_id: 1,
+			created_at: new Date(),
+			updated_at: new Date(),
+		},
+	];
+
+	const mockPetColors = [{ id: 1, color: "golden" }];
+
+	// Helper to create chainable query builder mock
+	const createQueryBuilder = (tableName: string) => {
+		const currentTable = tableName;
+
+		// biome-ignore lint/suspicious/noExplicitAny: Mock object needs flexible typing for tests
+		const builder: any = {
+			selectAll: vi.fn(() => builder),
+			select: vi.fn(() => builder),
+			where: vi.fn(() => builder),
+			innerJoin: vi.fn(() => builder),
+			returningAll: vi.fn(() => builder),
+			executeTakeFirst: vi.fn(() => {
+				if (currentTable === "users") {
+					return Promise.resolve(null);
+				}
+				if (currentTable === "pets") {
+					return Promise.resolve(null);
+				}
+				if (currentTable === "pet_pet_colors") {
+					return Promise.resolve(mockPetColors);
+				}
+				return Promise.resolve(null);
+			}),
+			executeTakeFirstOrThrow: vi.fn(() => {
+				if (currentTable === "users") {
+					return Promise.resolve(mockUsers[0]);
+				}
+				if (currentTable === "pets") {
+					return Promise.resolve(mockPets[0]);
+				}
+				return Promise.resolve(null);
+			}),
+			execute: vi.fn(() => {
+				if (currentTable === "users") {
+					return Promise.resolve(mockUsers);
+				}
+				if (currentTable === "pets") {
+					return Promise.resolve(mockPets);
+				}
+				if (currentTable === "pet_pet_colors") {
+					return Promise.resolve(mockPetColors);
+				}
+				return Promise.resolve([]);
+			}),
+		};
+
+		return builder;
+	};
+
 	return {
 		db: {
-			selectFrom: vi.fn(() => ({
-				selectAll: vi.fn(() => ({
-					where: vi.fn((field: string, op: string, value: any) => ({
-						executeTakeFirst: vi.fn(() => {
-							// Return null for non-existent IDs (like MAX_SAFE_INTEGER)
-							if (value === Number.MAX_SAFE_INTEGER) {
-								return Promise.resolve(null);
-							}
-							// Return user for existing IDs
-							return Promise.resolve(mockUsers.find((u) => u.id === value) || null);
+			selectFrom: vi.fn((tableName: string) => createQueryBuilder(tableName)),
+			insertInto: vi.fn((tableName: string) => {
+				const builder = createQueryBuilder(tableName);
+				builder.values = vi.fn(() => builder);
+				return builder;
+			}),
+			updateTable: vi.fn((tableName: string) => {
+				const builder = createQueryBuilder(tableName);
+				builder.set = vi.fn(() => builder);
+				return builder;
+			}),
+			deleteFrom: vi.fn((tableName: string) => {
+				const builder = createQueryBuilder(tableName);
+				builder.executeTakeFirst = vi.fn(() => Promise.resolve({ numDeletedRows: 0n }));
+				return builder;
+			}),
+			transaction: vi.fn(() => ({
+				// biome-ignore lint/suspicious/noExplicitAny: Transaction callback needs flexible typing
+				execute: vi.fn((fn: any) => {
+					// Create a mock transaction object with same interface
+					const trx = {
+						selectFrom: vi.fn((tableName: string) => createQueryBuilder(tableName)),
+						insertInto: vi.fn((tableName: string) => {
+							const builder = createQueryBuilder(tableName);
+							builder.values = vi.fn(() => builder);
+							return builder;
 						}),
-					})),
-					limit: vi.fn(() => ({
-						execute: vi.fn(() => Promise.resolve(mockUsers)),
-					})),
-					execute: vi.fn(() => Promise.resolve(mockUsers)),
-				})),
+						updateTable: vi.fn((tableName: string) => {
+							const builder = createQueryBuilder(tableName);
+							builder.set = vi.fn(() => builder);
+							return builder;
+						}),
+						deleteFrom: vi.fn((tableName: string) => createQueryBuilder(tableName)),
+					};
+					return fn(trx);
+				}),
 			})),
-			insertInto: vi.fn().mockReturnThis(),
-			values: vi.fn().mockReturnThis(),
-			returningAll: vi.fn().mockReturnThis(),
-			executeTakeFirstOrThrow: vi.fn().mockResolvedValue(mockUsers[0]),
-			updateTable: vi.fn().mockReturnThis(),
-			set: vi.fn().mockReturnThis(),
-			deleteFrom: vi.fn().mockReturnThis(),
 			destroy: vi.fn().mockResolvedValue(undefined),
 		},
 		checkDatabaseConnection: vi.fn().mockResolvedValue(true),

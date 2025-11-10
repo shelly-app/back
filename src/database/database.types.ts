@@ -8,17 +8,158 @@ export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
 // Type for timestamps
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
-// User table interface
+// Lookup tables
+export interface PetSpeciesTable {
+	id: Generated<number>;
+	species: string;
+}
+
+export interface SexesTable {
+	id: Generated<number>;
+	sex: string;
+}
+
+export interface PetStatusesTable {
+	id: Generated<number>;
+	status: string;
+}
+
+export interface PetSizesTable {
+	id: Generated<number>;
+	size: string;
+}
+
+export interface PetColorsTable {
+	id: Generated<number>;
+	color: string;
+}
+
+export interface AdoptionStatusesTable {
+	id: Generated<number>;
+	status: string;
+}
+
+export interface RolesTable {
+	id: Generated<number>;
+	role: string;
+}
+
+// Core tables
 export interface UsersTable {
 	id: Generated<number>;
 	name: string;
 	email: string;
 	age: number;
+	country: string | null;
+	state: string | null;
+	city: string | null;
 	created_at: Generated<Timestamp>;
 	updated_at: Generated<Timestamp>;
+}
+
+export interface SheltersTable {
+	id: Generated<number>;
+	name: string;
+	address: string | null;
+	city: string | null;
+	state: string | null;
+	country: string | null;
+	zip: number | null;
+	latitude: number | null;
+	longitude: number | null;
+	created_at: Generated<Timestamp>;
+	updated_at: Generated<Timestamp>;
+	deleted_at: Timestamp | null;
+}
+
+export interface VaccinesTable {
+	id: Generated<number>;
+	name: string;
+	species_id: number;
+	created_at: Generated<Timestamp>;
+}
+
+export interface PetsTable {
+	id: Generated<number>;
+	name: string;
+	birthdate: string | null;
+	breed: string | null;
+	species_id: number;
+	sex_id: number;
+	status_id: number;
+	size_id: number;
+	description: string | null;
+	shelter_id: number;
+	created_at: Generated<Timestamp>;
+	updated_at: Generated<Timestamp>;
+}
+
+export interface PetPetColorsTable {
+	pet_id: number;
+	color_id: number;
+}
+
+export interface PetPhotosTable {
+	id: Generated<number>;
+	pet_id: number;
+	key: string;
+	created_at: Generated<Timestamp>;
+	deleted_at: Timestamp | null;
+}
+
+export interface VaccinationsTable {
+	id: Generated<number>;
+	vaccine_id: number;
+	pet_id: number;
+	created_at: Generated<Timestamp>;
+	deleted_at: Timestamp | null;
+}
+
+export interface EventsTable {
+	id: Generated<number>;
+	pet_id: number;
+	name: string;
+	description: string | null;
+	date_time: Timestamp;
+	created_at: Generated<Timestamp>;
+	updated_at: Generated<Timestamp>;
+	deleted_at: Timestamp | null;
+}
+
+export interface AdoptionRequestsTable {
+	id: Generated<number>;
+	pet_id: number;
+	user_id: number;
+	status_id: number;
+	answers: unknown;
+	created_at: Generated<Timestamp>;
+	updated_at: Generated<Timestamp>;
+}
+
+export interface AssignmentsTable {
+	id: Generated<number>;
+	user_id: number;
+	role_id: number;
+	shelter_id: number;
 }
 
 // Database interface - add your tables here
 export interface Database {
 	users: UsersTable;
+	pet_species: PetSpeciesTable;
+	sexes: SexesTable;
+	pet_statuses: PetStatusesTable;
+	pet_sizes: PetSizesTable;
+	pet_colors: PetColorsTable;
+	adoption_statuses: AdoptionStatusesTable;
+	roles: RolesTable;
+	shelters: SheltersTable;
+	vaccines: VaccinesTable;
+	pets: PetsTable;
+	pet_pet_colors: PetPetColorsTable;
+	pet_photos: PetPhotosTable;
+	vaccinations: VaccinationsTable;
+	events: EventsTable;
+	adoption_requests: AdoptionRequestsTable;
+	assignments: AssignmentsTable;
 }

@@ -1,2 +1,21 @@
 export { checkDatabaseConnection, closeDatabaseConnection, db } from "./database";
-export type { Database, UsersTable } from "./database.types";
+export type {
+	AdoptionRequestsTable,
+	AdoptionStatusesTable,
+	AssignmentsTable,
+	Database,
+	EventsTable,
+	PetColorsTable,
+	PetPetColorsTable,
+	PetPhotosTable,
+	PetSizesTable,
+	PetSpeciesTable,
+	PetStatusesTable,
+	PetsTable,
+	RolesTable,
+	SexesTable,
+	SheltersTable,
+	UsersTable,
+	VaccinationsTable,
+	VaccinesTable,
+} from "./database.types";
