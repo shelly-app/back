@@ -1,0 +1,58 @@
+import { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi";
+import express, { type Router } from "express";
+import { z } from "zod";
+import {
+	CreatePetPhotoSchema,
+	DeletePetPhotoSchema,
+	GetPetPhotoSchema,
+	GetPetPhotosSchema,
+	PetPhotoSchema,
+} from "@/api/petPhoto/petPhotoModel";
+import { createApiResponse } from "@/api-docs/openAPIResponseBuilders";
+import { validateRequest } from "@/common/utils/httpHandlers";
+import { petPhotoController } from "./petPhotoController";
+
+export const petPhotoRegistry = new OpenAPIRegistry();
+export const petPhotoRouter: Router = express.Router();
+
+petPhotoRegistry.register("PetPhoto", PetPhotoSchema);
+
+petPhotoRegistry.registerPath({
+	method: "get",
+	path: "/pet-photos",
+	tags: ["PetPhoto"],
+	request: { query: GetPetPhotosSchema.shape.query },
+	responses: createApiResponse(z.array(PetPhotoSchema), "Success"),
+});
+
+petPhotoRouter.get("/", validateRequest(GetPetPhotosSchema), petPhotoController.getPetPhotos);
+
+petPhotoRegistry.registerPath({
+	method: "get",
+	path: "/pet-photos/{id}",
+	tags: ["PetPhoto"],
+	request: { params: GetPetPhotoSchema.shape.params },
+	responses: createApiResponse(PetPhotoSchema, "Success"),
+});
+
+petPhotoRouter.get("/:id", validateRequest(GetPetPhotoSchema), petPhotoController.getPetPhoto);
+
+petPhotoRegistry.registerPath({
+	method: "post",
+	path: "/pet-photos",
+	tags: ["PetPhoto"],
+	request: { body: { content: { "application/json": { schema: CreatePetPhotoSchema.shape.body } } } },
+	responses: createApiResponse(PetPhotoSchema, "Success"),
+});
+
+petPhotoRouter.post("/", validateRequest(CreatePetPhotoSchema), petPhotoController.createPetPhoto);
+
+petPhotoRegistry.registerPath({
+	method: "delete",
+	path: "/pet-photos/{id}",
+	tags: ["PetPhoto"],
+	request: { params: DeletePetPhotoSchema.shape.params },
+	responses: createApiResponse(z.null(), "Success"),
+});
+
+petPhotoRouter.delete("/:id", validateRequest(DeletePetPhotoSchema), petPhotoController.deletePetPhoto);

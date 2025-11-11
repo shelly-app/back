@@ -1,0 +1,34 @@
+import type { Request, RequestHandler, Response } from "express";
+
+import { petPhotoService } from "@/api/petPhoto/petPhotoService";
+
+class PetPhotoController {
+	public getPetPhotos: RequestHandler = async (req: Request, res: Response) => {
+		const filters = {
+			petId: req.query.petId ? Number(req.query.petId) : undefined,
+			includeDeleted: req.query.includeDeleted ? Boolean(req.query.includeDeleted) : undefined,
+		};
+		const serviceResponse = await petPhotoService.findAll(filters);
+		res.status(serviceResponse.statusCode).send(serviceResponse);
+	};
+
+	public getPetPhoto: RequestHandler = async (req: Request, res: Response) => {
+		const id = Number.parseInt(req.params.id as string, 10);
+		const serviceResponse = await petPhotoService.findById(id);
+		res.status(serviceResponse.statusCode).send(serviceResponse);
+	};
+
+	public createPetPhoto: RequestHandler = async (req: Request, res: Response) => {
+		const data = req.body;
+		const serviceResponse = await petPhotoService.create(data);
+		res.status(serviceResponse.statusCode).send(serviceResponse);
+	};
+
+	public deletePetPhoto: RequestHandler = async (req: Request, res: Response) => {
+		const id = Number.parseInt(req.params.id as string, 10);
+		const serviceResponse = await petPhotoService.delete(id);
+		res.status(serviceResponse.statusCode).send(serviceResponse);
+	};
+}
+
+export const petPhotoController = new PetPhotoController();

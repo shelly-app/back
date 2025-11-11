@@ -1,13 +1,31 @@
 import { OpenAPIRegistry, OpenApiGeneratorV3 } from "@asteasolutions/zod-to-openapi";
 
+import { adoptionRequestRegistry } from "@/api/adoptionRequest/adoptionRequestRouter";
+import { assignmentRegistry } from "@/api/assignment/assignmentRouter";
+import { eventRegistry } from "@/api/event/eventRouter";
 import { healthCheckRegistry } from "@/api/healthCheck/healthCheckRouter";
 import { petRegistry } from "@/api/pet/petRouter";
+import { petPhotoRegistry } from "@/api/petPhoto/petPhotoRouter";
+import { shelterRegistry } from "@/api/shelter/shelterRouter";
 import { userRegistry } from "@/api/user/userRouter";
+import { vaccinationRegistry } from "@/api/vaccination/vaccinationRouter";
+import { vaccineRegistry } from "@/api/vaccine/vaccineRouter";
 
 export type OpenAPIDocument = ReturnType<OpenApiGeneratorV3["generateDocument"]>;
 
 export function generateOpenAPIDocument(): OpenAPIDocument {
-	const registry = new OpenAPIRegistry([healthCheckRegistry, userRegistry, petRegistry]);
+	const registry = new OpenAPIRegistry([
+		healthCheckRegistry,
+		userRegistry,
+		petRegistry,
+		shelterRegistry,
+		adoptionRequestRegistry,
+		eventRegistry,
+		vaccineRegistry,
+		vaccinationRegistry,
+		petPhotoRegistry,
+		assignmentRegistry,
+	]);
 	const generator = new OpenApiGeneratorV3(registry.definitions);
 
 	return generator.generateDocument({
