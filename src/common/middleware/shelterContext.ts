@@ -3,6 +3,7 @@ import { StatusCodes } from "http-status-codes";
 
 import { ServiceResponse } from "@/common/models/serviceResponse";
 import { petService } from "@/api/pet/petService";
+import { adoptionRequestService } from "@/api/adoptionRequest/adoptionRequestService";
 
 /**
  * Middleware to attach shelter context from pet ID
@@ -52,8 +53,37 @@ export const attachAdoptionRequestShelterContext = async (
 	next: NextFunction,
 ): Promise<void> => {
 	try {
-		// This will be implemented when we add adoption request processing
-		// For now, adoption requests will need shelter ID passed explicitly
+		const adoptionRequestId = req.params.id ? Number(req.params.id) : undefined;
+
+		if (!adoptionRequestId) {
+			const response = ServiceResponse.failure("Adoption Request ID is required", null, StatusCodes.BAD_REQUEST);
+			res.status(response.statusCode).send(response);
+			return;
+		}
+
+		// Fetch adoption request to get pet ID
+		const adoptionRequestResult = await adoptionRequestService.findById(adoptionRequestId);
+
+		if (!adoptionRequestResult.success || !adoptionRequestResult.responseObject) {
+			const response = ServiceResponse.failure("Adoption Request not found", null, StatusCodes.NOT_FOUND);
+			res.status(response.statusCode).send(response);
+			return;
+		}
+
+		const petId = adoptionRequestResult.responseObject.petId;
+
+		// Fetch pet to get shelter ID
+		const petResult = await petService.findById(petId);
+
+		if (!petResult.success || !petResult.responseObject) {
+			const response = ServiceResponse.failure("Pet not found", null, StatusCodes.NOT_FOUND);
+			res.status(response.statusCode).send(response);
+			return;
+		}
+
+		// Attach shelter ID to params so authorize middleware can use it
+		req.params.shelterId = petResult.responseObject.shelterId.toString();
+
 		next();
 	} catch (error) {
 		const response = ServiceResponse.failure("Failed to determine shelter context", null, StatusCodes.INTERNAL_SERVER_ERROR);

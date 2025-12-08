@@ -12,6 +12,7 @@ export const AdoptionRequestSchema = z.object({
 	userId: z.number(),
 	statusId: z.number(),
 	answers: z.record(z.unknown()),
+	adminMessage: z.string().nullable(),
 	createdAt: z.date(),
 	updatedAt: z.date(),
 });
@@ -52,4 +53,13 @@ export const UpdateAdoptionRequestSchema = z.object({
 // Input Validation for 'DELETE adoption-requests/:id' endpoint
 export const DeleteAdoptionRequestSchema = z.object({
 	params: z.object({ id: commonValidations.id }),
+});
+
+// Input Validation for 'POST adoption-requests/:id/process' endpoint
+export const ProcessAdoptionRequestSchema = z.object({
+	params: z.object({ id: commonValidations.id }),
+	body: z.object({
+		statusId: z.number().int().min(1).max(3, "Status ID must be between 1 and 3"),
+		adminMessage: z.string().optional(),
+	}),
 });

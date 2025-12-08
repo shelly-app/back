@@ -43,6 +43,7 @@ export class AdoptionRequestRepository {
 			userId: request.user_id,
 			statusId: request.status_id,
 			answers: request.answers as Record<string, unknown>,
+			adminMessage: request.admin_message,
 			createdAt: request.created_at,
 			updatedAt: request.updated_at,
 		}));
@@ -59,6 +60,7 @@ export class AdoptionRequestRepository {
 			userId: request.user_id,
 			statusId: request.status_id,
 			answers: request.answers as Record<string, unknown>,
+			adminMessage: request.admin_message,
 			createdAt: request.created_at,
 			updatedAt: request.updated_at,
 		};
@@ -82,6 +84,7 @@ export class AdoptionRequestRepository {
 			userId: newRequest.user_id,
 			statusId: newRequest.status_id,
 			answers: newRequest.answers as Record<string, unknown>,
+			adminMessage: newRequest.admin_message,
 			createdAt: newRequest.created_at,
 			updatedAt: newRequest.updated_at,
 		};
@@ -115,6 +118,7 @@ export class AdoptionRequestRepository {
 			userId: updatedRequest.user_id,
 			statusId: updatedRequest.status_id,
 			answers: updatedRequest.answers as Record<string, unknown>,
+			adminMessage: updatedRequest.admin_message,
 			createdAt: updatedRequest.created_at,
 			updatedAt: updatedRequest.updated_at,
 		};
@@ -124,5 +128,30 @@ export class AdoptionRequestRepository {
 		const result = await db.deleteFrom("adoption_requests").where("id", "=", id).executeTakeFirst();
 
 		return Number(result.numDeletedRows) > 0;
+	}
+
+	async processAsync(id: number, statusId: number, adminMessage?: string): Promise<AdoptionRequest | null> {
+		const updatedRequest = await db
+			.updateTable("adoption_requests")
+			.set({
+				status_id: statusId,
+				admin_message: adminMessage || null,
+			})
+			.where("id", "=", id)
+			.returningAll()
+			.executeTakeFirst();
+
+		if (!updatedRequest) return null;
+
+		return {
+			id: updatedRequest.id,
+			petId: updatedRequest.pet_id,
+			userId: updatedRequest.user_id,
+			statusId: updatedRequest.status_id,
+			answers: updatedRequest.answers as Record<string, unknown>,
+			adminMessage: updatedRequest.admin_message,
+			createdAt: updatedRequest.created_at,
+			updatedAt: updatedRequest.updated_at,
+		};
 	}
 }

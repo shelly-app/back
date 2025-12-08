@@ -125,6 +125,25 @@ export class AdoptionRequestService {
 			);
 		}
 	}
+
+	// Processes an adoption request (approve/reject with optional message)
+	async process(id: number, statusId: number, adminMessage?: string): Promise<ServiceResponse<AdoptionRequest | null>> {
+		try {
+			const adoptionRequest = await this.adoptionRequestRepository.processAsync(id, statusId, adminMessage);
+			if (!adoptionRequest) {
+				return ServiceResponse.failure("Adoption Request not found", null, StatusCodes.NOT_FOUND);
+			}
+			return ServiceResponse.success<AdoptionRequest>("Adoption Request processed successfully", adoptionRequest);
+		} catch (ex) {
+			const errorMessage = `Error processing adoption request with id ${id}: ${(ex as Error).message}`;
+			logger.error(errorMessage);
+			return ServiceResponse.failure(
+				"An error occurred while processing adoption request.",
+				null,
+				StatusCodes.INTERNAL_SERVER_ERROR,
+			);
+		}
+	}
 }
 
 export const adoptionRequestService = new AdoptionRequestService();

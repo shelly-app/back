@@ -37,6 +37,13 @@ class AdoptionRequestController {
 		const serviceResponse = await adoptionRequestService.delete(id);
 		res.status(serviceResponse.statusCode).send(serviceResponse);
 	};
+
+	public processAdoptionRequest: RequestHandler = async (req: Request, res: Response) => {
+		const id = Number.parseInt(req.params.id as string, 10);
+		const { statusId, adminMessage } = req.body;
+		const serviceResponse = await adoptionRequestService.process(id, statusId, adminMessage);
+		res.status(serviceResponse.statusCode).send(serviceResponse);
+	};
 }
 
 export const adoptionRequestController = new AdoptionRequestController();

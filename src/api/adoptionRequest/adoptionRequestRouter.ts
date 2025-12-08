@@ -7,11 +7,15 @@ import {
 	DeleteAdoptionRequestSchema,
 	GetAdoptionRequestSchema,
 	GetAdoptionRequestsSchema,
+	ProcessAdoptionRequestSchema,
 	UpdateAdoptionRequestSchema,
 } from "@/api/adoptionRequest/adoptionRequestModel";
 import { createApiResponse } from "@/api-docs/openAPIResponseBuilders";
 import { validateRequest } from "@/common/utils/httpHandlers";
 import { adoptionRequestController } from "./adoptionRequestController";
+import { authenticate } from "@/common/middleware/authenticate";
+import { authorize } from "@/common/middleware/authorize";
+import { attachAdoptionRequestShelterContext } from "@/common/middleware/shelterContext";
 
 export const adoptionRequestRegistry = new OpenAPIRegistry();
 export const adoptionRequestRouter: Router = express.Router();
@@ -89,4 +93,24 @@ adoptionRequestRouter.delete(
 	"/:id",
 	validateRequest(DeleteAdoptionRequestSchema),
 	adoptionRequestController.deleteAdoptionRequest,
+);
+
+adoptionRequestRegistry.registerPath({
+	method: "post",
+	path: "/adoption-requests/{id}/process",
+	tags: ["AdoptionRequest"],
+	request: {
+		params: ProcessAdoptionRequestSchema.shape.params,
+		body: { content: { "application/json": { schema: ProcessAdoptionRequestSchema.shape.body } } },
+	},
+	responses: createApiResponse(AdoptionRequestSchema, "Success"),
+});
+
+adoptionRequestRouter.post(
+	"/:id/process",
+	authenticate,
+	attachAdoptionRequestShelterContext,
+	authorize(["admin"], "params"),
+	validateRequest(ProcessAdoptionRequestSchema),
+	adoptionRequestController.processAdoptionRequest,
 );
