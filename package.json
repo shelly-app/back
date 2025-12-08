@@ -23,6 +23,8 @@
 	},
 	"dependencies": {
 		"@asteasolutions/zod-to-openapi": "7.3.4",
+		"@aws-sdk/client-ses": "^3.946.0",
+		"aws-jwt-verify": "^5.1.1",
 		"cors": "2.8.5",
 		"dotenv": "17.2.1",
 		"express": "5.1.0",

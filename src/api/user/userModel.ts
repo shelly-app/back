@@ -11,6 +11,10 @@ export const UserSchema = z.object({
 	name: z.string(),
 	email: z.string().email(),
 	age: z.number(),
+	cognitoSub: z.string().nullable(),
+	country: z.string().nullable(),
+	state: z.string().nullable(),
+	city: z.string().nullable(),
 	createdAt: z.date(),
 	updatedAt: z.date(),
 });

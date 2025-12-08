@@ -72,6 +72,45 @@ export class UserService {
 			return ServiceResponse.failure("An error occurred while deleting user.", null, StatusCodes.INTERNAL_SERVER_ERROR);
 		}
 	}
+
+	// Syncs a Cognito user to the database (creates or updates)
+	async syncCognitoUser(cognitoData: { cognitoSub: string; email: string; name: string }): Promise<ServiceResponse<User | null>> {
+		try {
+			// Try to find user by Cognito sub
+			let user = await this.userRepository.findByCognitoSubAsync(cognitoData.cognitoSub);
+
+			if (user) {
+				// Update existing user if name or email changed
+				if (user.name !== cognitoData.name || user.email !== cognitoData.email) {
+					user = await this.userRepository.updateAsync(user.id, {
+						name: cognitoData.name,
+						email: cognitoData.email,
+					});
+				}
+				return ServiceResponse.success<User>("User synced successfully", user as User);
+			}
+
+			// If not found by Cognito sub, try by email (in case user existed before Cognito)
+			user = await this.userRepository.findByEmailAsync(cognitoData.email);
+
+			if (user) {
+				// Update existing user with Cognito sub
+				user = await this.userRepository.updateAsync(user.id, {
+					cognitoSub: cognitoData.cognitoSub,
+					name: cognitoData.name,
+				});
+				return ServiceResponse.success<User>("User synced successfully", user as User);
+			}
+
+			// Create new user
+			user = await this.userRepository.createFromCognitoAsync(cognitoData);
+			return ServiceResponse.success<User>("User created successfully", user, StatusCodes.CREATED);
+		} catch (ex) {
+			const errorMessage = `Error syncing Cognito user: ${(ex as Error).message}`;
+			logger.error(errorMessage);
+			return ServiceResponse.failure("An error occurred while syncing user.", null, StatusCodes.INTERNAL_SERVER_ERROR);
+		}
+	}
 }
 
 export const userService = new UserService();
