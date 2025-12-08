@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 
-import type { Pet } from "@/api/pet/petModel";
+import type { Pet, PetDetail } from "@/api/pet/petModel";
 import { PetRepository } from "@/api/pet/petRepository";
 import { ServiceResponse } from "@/common/models/serviceResponse";
 import { logger } from "@/server";
@@ -65,14 +65,14 @@ export class PetService {
 		}
 	}
 
-	// Retrieves a single pet by their ID
-	async findById(id: number): Promise<ServiceResponse<Pet | null>> {
+	// Retrieves a single pet by their ID with full details (events, vaccinations)
+	async findById(id: number): Promise<ServiceResponse<PetDetail | null>> {
 		try {
-			const pet = await this.petRepository.findByIdAsync(id);
+			const pet = await this.petRepository.findByIdWithDetailsAsync(id);
 			if (!pet) {
 				return ServiceResponse.failure("Pet not found", null, StatusCodes.NOT_FOUND);
 			}
-			return ServiceResponse.success<Pet>("Pet found", pet);
+			return ServiceResponse.success<PetDetail>("Pet found", pet);
 		} catch (ex) {
 			const errorMessage = `Error finding pet with id ${id}: ${(ex as Error).message}`;
 			logger.error(errorMessage);

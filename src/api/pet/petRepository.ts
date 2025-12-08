@@ -1,4 +1,4 @@
-import type { Pet } from "@/api/pet/petModel";
+import type { Pet, PetDetail } from "@/api/pet/petModel";
 import { db } from "@/database";
 
 interface PetFilters {
@@ -130,6 +130,62 @@ export class PetRepository {
 			colors,
 			createdAt: pet.created_at,
 			updatedAt: pet.updated_at,
+		};
+	}
+
+	async findByIdWithDetailsAsync(id: number): Promise<PetDetail | null> {
+		// First get the basic pet information
+		const pet = await this.findByIdAsync(id);
+		if (!pet) return null;
+
+		// Fetch events for this pet (non-deleted events)
+		const eventRows = await db
+			.selectFrom("events")
+			.selectAll()
+			.where("pet_id", "=", id)
+			.where("deleted_at", "is", null)
+			.execute();
+
+		const events = eventRows.map((event) => ({
+			id: event.id,
+			petId: event.pet_id,
+			name: event.name,
+			description: event.description,
+			dateTime: event.date_time,
+			createdAt: event.created_at,
+			updatedAt: event.updated_at,
+			deletedAt: event.deleted_at,
+		}));
+
+		// Fetch vaccinations with vaccine names (non-deleted vaccinations)
+		const vaccinationRows = await db
+			.selectFrom("vaccinations")
+			.innerJoin("vaccines", "vaccinations.vaccine_id", "vaccines.id")
+			.select([
+				"vaccinations.id",
+				"vaccinations.vaccine_id as vaccineId",
+				"vaccinations.pet_id as petId",
+				"vaccinations.created_at as createdAt",
+				"vaccinations.deleted_at as deletedAt",
+				"vaccines.name as vaccineName",
+			])
+			.where("vaccinations.pet_id", "=", id)
+			.where("vaccinations.deleted_at", "is", null)
+			.execute();
+
+		const vaccinations = vaccinationRows.map((vac) => ({
+			id: vac.id,
+			vaccineId: vac.vaccineId,
+			petId: vac.petId,
+			createdAt: vac.createdAt,
+			deletedAt: vac.deletedAt,
+			vaccineName: vac.vaccineName,
+		}));
+
+		return {
+			...pet,
+			events,
+			vaccinations,
 		};
 	}
 

@@ -2,6 +2,8 @@ import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 import { z } from "zod";
 
 import { commonValidations } from "@/common/utils/commonValidation";
+import { EventSchema } from "@/api/event/eventModel";
+import { VaccinationSchema } from "@/api/vaccination/vaccinationModel";
 
 extendZodWithOpenApi(z);
 
@@ -27,6 +29,18 @@ export const PetSchema = z.object({
 	colors: z.array(PetColorSchema),
 	createdAt: z.date(),
 	updatedAt: z.date(),
+});
+
+// Vaccination with vaccine name
+export const VaccinationWithVaccineNameSchema = VaccinationSchema.extend({
+	vaccineName: z.string(),
+});
+
+// Pet with detailed information including events and vaccinations
+export type PetDetail = z.infer<typeof PetDetailSchema>;
+export const PetDetailSchema = PetSchema.extend({
+	events: z.array(EventSchema),
+	vaccinations: z.array(VaccinationWithVaccineNameSchema),
 });
 
 // Input Validation for 'GET pets' endpoint
