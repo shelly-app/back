@@ -69,3 +69,28 @@ export const UpdateShelterSchema = z.object({
 export const DeleteShelterSchema = z.object({
 	params: z.object({ id: commonValidations.id }),
 });
+
+// Shelter member schema (user with role in shelter)
+export type ShelterMember = z.infer<typeof ShelterMemberSchema>;
+export const ShelterMemberSchema = z.object({
+	userId: z.number(),
+	userName: z.string(),
+	userEmail: z.string().email(),
+	roleId: z.number(),
+	roleName: z.string(),
+	assignmentId: z.number(),
+});
+
+// Input Validation for 'GET shelters/:id/members' endpoint
+export const GetShelterMembersSchema = z.object({
+	params: z.object({ id: commonValidations.id }),
+});
+
+// Input Validation for 'POST shelters/:id/invite' endpoint
+export const InviteMemberSchema = z.object({
+	params: z.object({ id: commonValidations.id }),
+	body: z.object({
+		email: z.string().email("Valid email is required"),
+		roleName: z.enum(["admin", "member"], { errorMap: () => ({ message: "Role must be 'admin' or 'member'" }) }),
+	}),
+});

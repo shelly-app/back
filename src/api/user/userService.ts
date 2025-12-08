@@ -111,6 +111,41 @@ export class UserService {
 			return ServiceResponse.failure("An error occurred while syncing user.", null, StatusCodes.INTERNAL_SERVER_ERROR);
 		}
 	}
+
+	// Finds a user by email
+	async findByEmail(email: string): Promise<ServiceResponse<User | null>> {
+		try {
+			const user = await this.userRepository.findByEmailAsync(email);
+			if (!user) {
+				return ServiceResponse.failure("User not found", null, StatusCodes.NOT_FOUND);
+			}
+			return ServiceResponse.success<User>("User found", user);
+		} catch (ex) {
+			const errorMessage = `Error finding user by email ${email}: ${(ex as Error).message}`;
+			logger.error(errorMessage);
+			return ServiceResponse.failure("An error occurred while finding user.", null, StatusCodes.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	// Creates a placeholder user from email (for invitations)
+	async createFromEmail(email: string): Promise<ServiceResponse<User | null>> {
+		try {
+			const user = await this.userRepository.createAsync({
+				name: email, // Use email as name until they sign in
+				email,
+				age: 0, // Placeholder age
+				cognitoSub: null,
+				country: null,
+				state: null,
+				city: null,
+			});
+			return ServiceResponse.success<User>("User created successfully", user, StatusCodes.CREATED);
+		} catch (ex) {
+			const errorMessage = `Error creating user from email ${email}: ${(ex as Error).message}`;
+			logger.error(errorMessage);
+			return ServiceResponse.failure("An error occurred while creating user.", null, StatusCodes.INTERNAL_SERVER_ERROR);
+		}
+	}
 }
 
 export const userService = new UserService();

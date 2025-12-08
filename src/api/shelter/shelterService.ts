@@ -1,9 +1,13 @@
 import { StatusCodes } from "http-status-codes";
 
-import type { Shelter } from "@/api/shelter/shelterModel";
+import type { Shelter, ShelterMember } from "@/api/shelter/shelterModel";
 import { ShelterRepository } from "@/api/shelter/shelterRepository";
 import { ServiceResponse } from "@/common/models/serviceResponse";
 import { logger } from "@/server";
+import { userService } from "@/api/user/userService";
+import { assignmentService } from "@/api/assignment/assignmentService";
+import { emailService } from "@/common/services/emailService";
+import { getRoleId, type RoleName } from "@/common/utils/roleHelpers";
 
 interface ShelterFilters {
 	city?: string;
@@ -127,6 +131,109 @@ export class ShelterService {
 			logger.error(errorMessage);
 			return ServiceResponse.failure(
 				"An error occurred while deleting shelter.",
+				null,
+				StatusCodes.INTERNAL_SERVER_ERROR,
+			);
+		}
+	}
+
+	// Retrieves all members of a shelter
+	async getMembers(shelterId: number): Promise<ServiceResponse<ShelterMember[] | null>> {
+		try {
+			const members = await this.shelterRepository.getMembersAsync(shelterId);
+			return ServiceResponse.success<ShelterMember[]>("Shelter members found", members);
+		} catch (ex) {
+			const errorMessage = `Error finding members for shelter ${shelterId}: ${(ex as Error).message}`;
+			logger.error(errorMessage);
+			return ServiceResponse.failure(
+				"An error occurred while retrieving shelter members.",
+				null,
+				StatusCodes.INTERNAL_SERVER_ERROR,
+			);
+		}
+	}
+
+	// Invites a new member to a shelter
+	async inviteMember(
+		shelterId: number,
+		email: string,
+		roleName: RoleName,
+		inviterName: string,
+	): Promise<ServiceResponse<ShelterMember | null>> {
+		try {
+			// First check if shelter exists
+			const shelterResult = await this.findById(shelterId);
+			if (!shelterResult.success || !shelterResult.responseObject) {
+				return ServiceResponse.failure("Shelter not found", null, StatusCodes.NOT_FOUND);
+			}
+			const shelter = shelterResult.responseObject;
+
+			// Check if user exists by email, or create placeholder
+			const userResult = await userService.findByEmail(email);
+			let userId: number;
+
+			if (userResult.success && userResult.responseObject) {
+				userId = userResult.responseObject.id;
+			} else {
+				// Create placeholder user
+				const createUserResult = await userService.createFromEmail(email);
+				if (!createUserResult.success || !createUserResult.responseObject) {
+					return ServiceResponse.failure("Failed to create user", null, StatusCodes.INTERNAL_SERVER_ERROR);
+				}
+				userId = createUserResult.responseObject.id;
+			}
+
+			// Check if assignment already exists
+			const existingAssignmentResult = await assignmentService.findAll({
+				userId,
+				shelterId,
+			});
+
+			if (existingAssignmentResult.success && existingAssignmentResult.responseObject?.length) {
+				return ServiceResponse.failure("User is already a member of this shelter", null, StatusCodes.CONFLICT);
+			}
+
+			// Create assignment
+			const roleId = getRoleId(roleName);
+			const assignmentResult = await assignmentService.create({
+				userId,
+				roleId,
+				shelterId,
+			});
+
+			if (!assignmentResult.success || !assignmentResult.responseObject) {
+				return ServiceResponse.failure("Failed to create assignment", null, StatusCodes.INTERNAL_SERVER_ERROR);
+			}
+
+			// Send invitation email
+			try {
+				await emailService.sendInvitationEmail({
+					toEmail: email,
+					shelterName: shelter.name,
+					roleName,
+					inviterName,
+				});
+			} catch (emailError) {
+				// Log error but don't fail the request
+				logger.error(`Failed to send invitation email to ${email}: ${(emailError as Error).message}`);
+			}
+
+			// Return the new member details
+			const member: ShelterMember = {
+				userId,
+				userName: userResult.responseObject?.name || email,
+				userEmail: email,
+				roleId,
+				roleName,
+				assignmentId: assignmentResult.responseObject.id,
+			};
+
+			return ServiceResponse.success<ShelterMember>("Member invited successfully", member, StatusCodes.CREATED);
+		} catch (ex) {
+			const errorMessage = `Error inviting member to shelter ${shelterId}: ${(ex as Error).message}`;
+			logger.error(errorMessage);
+			return ServiceResponse.failure(
+				"An error occurred while inviting member.",
 				null,
 				StatusCodes.INTERNAL_SERVER_ERROR,
 			);

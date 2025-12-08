@@ -1,6 +1,7 @@
 import type { Request, RequestHandler, Response } from "express";
 
 import { shelterService } from "@/api/shelter/shelterService";
+import type { RoleName } from "@/common/utils/roleHelpers";
 
 class ShelterController {
 	public getShelters: RequestHandler = async (req: Request, res: Response) => {
@@ -36,6 +37,20 @@ class ShelterController {
 	public deleteShelter: RequestHandler = async (req: Request, res: Response) => {
 		const id = Number.parseInt(req.params.id as string, 10);
 		const serviceResponse = await shelterService.delete(id);
+		res.status(serviceResponse.statusCode).send(serviceResponse);
+	};
+
+	public getShelterMembers: RequestHandler = async (req: Request, res: Response) => {
+		const shelterId = Number.parseInt(req.params.id as string, 10);
+		const serviceResponse = await shelterService.getMembers(shelterId);
+		res.status(serviceResponse.statusCode).send(serviceResponse);
+	};
+
+	public inviteMember: RequestHandler = async (req: Request, res: Response) => {
+		const shelterId = Number.parseInt(req.params.id as string, 10);
+		const { email, roleName } = req.body as { email: string; roleName: RoleName };
+		const inviterName = req.user?.name || "Unknown";
+		const serviceResponse = await shelterService.inviteMember(shelterId, email, roleName, inviterName);
 		res.status(serviceResponse.statusCode).send(serviceResponse);
 	};
 }

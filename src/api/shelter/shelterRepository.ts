@@ -1,4 +1,4 @@
-import type { Shelter } from "@/api/shelter/shelterModel";
+import type { Shelter, ShelterMember } from "@/api/shelter/shelterModel";
 import { db } from "@/database";
 
 interface ShelterFilters {
@@ -187,5 +187,31 @@ export class ShelterRepository {
 			.executeTakeFirst();
 
 		return Number(result.numUpdatedRows) > 0;
+	}
+
+	async getMembersAsync(shelterId: number): Promise<ShelterMember[]> {
+		const members = await db
+			.selectFrom("assignments")
+			.innerJoin("users", "assignments.user_id", "users.id")
+			.innerJoin("roles", "assignments.role_id", "roles.id")
+			.select([
+				"users.id as userId",
+				"users.name as userName",
+				"users.email as userEmail",
+				"roles.id as roleId",
+				"roles.role as roleName",
+				"assignments.id as assignmentId",
+			])
+			.where("assignments.shelter_id", "=", shelterId)
+			.execute();
+
+		return members.map((member) => ({
+			userId: member.userId,
+			userName: member.userName,
+			userEmail: member.userEmail,
+			roleId: member.roleId,
+			roleName: member.roleName,
+			assignmentId: member.assignmentId,
+		}));
 	}
 }
