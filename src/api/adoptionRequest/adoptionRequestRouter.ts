@@ -32,6 +32,7 @@ adoptionRequestRegistry.registerPath({
 
 adoptionRequestRouter.get(
 	"/",
+	authenticate,
 	validateRequest(GetAdoptionRequestsSchema),
 	adoptionRequestController.getAdoptionRequests,
 );
@@ -46,6 +47,9 @@ adoptionRequestRegistry.registerPath({
 
 adoptionRequestRouter.get(
 	"/:id",
+	authenticate,
+	attachAdoptionRequestShelterContext,
+	authorize(["admin", "member"], "params"),
 	validateRequest(GetAdoptionRequestSchema),
 	adoptionRequestController.getAdoptionRequest,
 );
@@ -77,6 +81,9 @@ adoptionRequestRegistry.registerPath({
 
 adoptionRequestRouter.patch(
 	"/:id",
+	authenticate,
+	attachAdoptionRequestShelterContext,
+	authorize(["admin"], "params"),
 	validateRequest(UpdateAdoptionRequestSchema),
 	adoptionRequestController.updateAdoptionRequest,
 );
@@ -91,6 +98,9 @@ adoptionRequestRegistry.registerPath({
 
 adoptionRequestRouter.delete(
 	"/:id",
+	authenticate,
+	attachAdoptionRequestShelterContext,
+	authorize(["admin"], "params"),
 	validateRequest(DeleteAdoptionRequestSchema),
 	adoptionRequestController.deleteAdoptionRequest,
 );

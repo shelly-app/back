@@ -52,7 +52,13 @@ petRegistry.registerPath({
 	responses: createApiResponse(PetSchema, "Success"),
 });
 
-petRouter.post("/", validateRequest(CreatePetSchema), petController.createPet);
+petRouter.post(
+	"/",
+	authenticate,
+	authorize(["admin", "member"], "body"),
+	validateRequest(CreatePetSchema),
+	petController.createPet,
+);
 
 petRegistry.registerPath({
 	method: "patch",
@@ -65,7 +71,14 @@ petRegistry.registerPath({
 	responses: createApiResponse(PetSchema, "Success"),
 });
 
-petRouter.patch("/:id", validateRequest(UpdatePetSchema), petController.updatePet);
+petRouter.patch(
+	"/:id",
+	authenticate,
+	attachPetShelterContext,
+	authorize(["admin", "member"], "params"),
+	validateRequest(UpdatePetSchema),
+	petController.updatePet,
+);
 
 petRegistry.registerPath({
 	method: "delete",
@@ -75,7 +88,14 @@ petRegistry.registerPath({
 	responses: createApiResponse(z.null(), "Success"),
 });
 
-petRouter.delete("/:id", validateRequest(DeletePetSchema), petController.deletePet);
+petRouter.delete(
+	"/:id",
+	authenticate,
+	attachPetShelterContext,
+	authorize(["admin"], "params"),
+	validateRequest(DeletePetSchema),
+	petController.deletePet,
+);
 
 petRegistry.registerPath({
 	method: "post",
