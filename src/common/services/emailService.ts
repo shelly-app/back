@@ -65,7 +65,8 @@ export class EmailService {
 			await sesClient.send(command);
 			logger.info(`Invitation email sent to ${data.toEmail} for ${data.shelterName}`);
 		} catch (error) {
-			logger.error(`Failed to send invitation email to ${data.toEmail}:`, error);
+			const errorMessage = `Failed to send invitation email to ${data.toEmail}: ${(error as Error).message}`;
+			logger.error(errorMessage);
 			throw error;
 		}
 	}

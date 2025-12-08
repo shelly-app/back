@@ -82,3 +82,8 @@ export const UpdatePetSchema = z.object({
 export const DeletePetSchema = z.object({
 	params: z.object({ id: commonValidations.id }),
 });
+
+// Input Validation for 'POST pets/:id/archive' endpoint
+export const ArchivePetSchema = z.object({
+	params: z.object({ id: commonValidations.id }),
+});

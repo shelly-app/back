@@ -39,6 +39,12 @@ class PetController {
 		const serviceResponse = await petService.delete(id);
 		res.status(serviceResponse.statusCode).send(serviceResponse);
 	};
+
+	public archivePet: RequestHandler = async (req: Request, res: Response) => {
+		const id = Number.parseInt(req.params.id as string, 10);
+		const serviceResponse = await petService.archive(id);
+		res.status(serviceResponse.statusCode).send(serviceResponse);
+	};
 }
 
 export const petController = new PetController();

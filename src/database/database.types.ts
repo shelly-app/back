@@ -53,6 +53,7 @@ export interface UsersTable {
 	country: string | null;
 	state: string | null;
 	city: string | null;
+	cognito_sub: string | null;
 	created_at: Generated<Timestamp>;
 	updated_at: Generated<Timestamp>;
 }
@@ -92,6 +93,7 @@ export interface PetsTable {
 	shelter_id: number;
 	created_at: Generated<Timestamp>;
 	updated_at: Generated<Timestamp>;
+	deleted_at: Timestamp | null;
 }
 
 export interface PetPetColorsTable {
@@ -132,6 +134,7 @@ export interface AdoptionRequestsTable {
 	user_id: number;
 	status_id: number;
 	answers: unknown;
+	admin_message: string | null;
 	created_at: Generated<Timestamp>;
 	updated_at: Generated<Timestamp>;
 }
@@ -141,6 +144,22 @@ export interface AssignmentsTable {
 	user_id: number;
 	role_id: number;
 	shelter_id: number;
+}
+
+export interface ShelterAccessRequestsTable {
+	id: Generated<number>;
+	shelter_name: string;
+	shelter_type: string;
+	country: string;
+	state: string;
+	city: string;
+	contact_name: string;
+	contact_email: string;
+	contact_phone: string;
+	message: string;
+	status: string;
+	created_at: Generated<Timestamp>;
+	updated_at: Generated<Timestamp>;
 }
 
 // Database interface - add your tables here
@@ -162,4 +181,5 @@ export interface Database {
 	events: EventsTable;
 	adoption_requests: AdoptionRequestsTable;
 	assignments: AssignmentsTable;
+	shelter_access_requests: ShelterAccessRequestsTable;
 }

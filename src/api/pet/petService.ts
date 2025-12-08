@@ -121,6 +121,21 @@ export class PetService {
 			return ServiceResponse.failure("An error occurred while deleting pet.", null, StatusCodes.INTERNAL_SERVER_ERROR);
 		}
 	}
+
+	// Archives a pet by their ID (soft delete)
+	async archive(id: number): Promise<ServiceResponse<Pet | null>> {
+		try {
+			const pet = await this.petRepository.archiveAsync(id);
+			if (!pet) {
+				return ServiceResponse.failure("Pet not found or already archived", null, StatusCodes.NOT_FOUND);
+			}
+			return ServiceResponse.success<Pet>("Pet archived successfully", pet);
+		} catch (ex) {
+			const errorMessage = `Error archiving pet with id ${id}: ${(ex as Error).message}`;
+			logger.error(errorMessage);
+			return ServiceResponse.failure("An error occurred while archiving pet.", null, StatusCodes.INTERNAL_SERVER_ERROR);
+		}
+	}
 }
 
 export const petService = new PetService();

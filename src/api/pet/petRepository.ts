@@ -36,8 +36,13 @@ interface UpdatePetData {
 }
 
 export class PetRepository {
-	async findAllAsync(filters: PetFilters = {}): Promise<Pet[]> {
+	async findAllAsync(filters: PetFilters = {}, includeDeleted = false): Promise<Pet[]> {
 		let query = db.selectFrom("pets").selectAll();
+
+		// Filter out deleted pets by default
+		if (!includeDeleted) {
+			query = query.where("deleted_at", "is", null);
+		}
 
 		// Apply filters
 		if (filters.speciesId) {
@@ -94,7 +99,12 @@ export class PetRepository {
 	}
 
 	async findByIdAsync(id: number): Promise<Pet | null> {
-		const pet = await db.selectFrom("pets").selectAll().where("id", "=", id).executeTakeFirst();
+		const pet = await db
+			.selectFrom("pets")
+			.selectAll()
+			.where("id", "=", id)
+			.where("deleted_at", "is", null)
+			.executeTakeFirst();
 
 		if (!pet) return null;
 
@@ -265,5 +275,41 @@ export class PetRepository {
 		const result = await db.deleteFrom("pets").where("id", "=", id).executeTakeFirst();
 
 		return Number(result.numDeletedRows) > 0;
+	}
+
+	async archiveAsync(id: number): Promise<Pet | null> {
+		const pet = await db
+			.updateTable("pets")
+			.set({ deleted_at: new Date() })
+			.where("id", "=", id)
+			.where("deleted_at", "is", null)
+			.returningAll()
+			.executeTakeFirst();
+
+		if (!pet) return null;
+
+		// Fetch colors for the archived pet
+		const colors = await db
+			.selectFrom("pet_pet_colors")
+			.innerJoin("pet_colors", "pet_pet_colors.color_id", "pet_colors.id")
+			.select(["pet_colors.id", "pet_colors.color"])
+			.where("pet_pet_colors.pet_id", "=", pet.id)
+			.execute();
+
+		return {
+			id: pet.id,
+			name: pet.name,
+			birthdate: pet.birthdate,
+			breed: pet.breed,
+			speciesId: pet.species_id,
+			sexId: pet.sex_id,
+			statusId: pet.status_id,
+			sizeId: pet.size_id,
+			description: pet.description,
+			shelterId: pet.shelter_id,
+			colors,
+			createdAt: pet.created_at,
+			updatedAt: pet.updated_at,
+		};
 	}
 }
