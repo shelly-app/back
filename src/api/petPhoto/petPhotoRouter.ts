@@ -9,6 +9,7 @@ import {
 	PetPhotoSchema,
 } from "@/api/petPhoto/petPhotoModel";
 import { createApiResponse } from "@/api-docs/openAPIResponseBuilders";
+import { authenticate } from "@/common/middleware/authenticate";
 import { validateRequest } from "@/common/utils/httpHandlers";
 import { petPhotoController } from "./petPhotoController";
 
@@ -45,7 +46,7 @@ petPhotoRegistry.registerPath({
 	responses: createApiResponse(PetPhotoSchema, "Success"),
 });
 
-petPhotoRouter.post("/", validateRequest(CreatePetPhotoSchema), petPhotoController.createPetPhoto);
+petPhotoRouter.post("/", authenticate, validateRequest(CreatePetPhotoSchema), petPhotoController.createPetPhoto);
 
 petPhotoRegistry.registerPath({
 	method: "delete",
@@ -55,4 +56,4 @@ petPhotoRegistry.registerPath({
 	responses: createApiResponse(z.null(), "Success"),
 });
 
-petPhotoRouter.delete("/:id", validateRequest(DeletePetPhotoSchema), petPhotoController.deletePetPhoto);
+petPhotoRouter.delete("/:id", authenticate, validateRequest(DeletePetPhotoSchema), petPhotoController.deletePetPhoto);

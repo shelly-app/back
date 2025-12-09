@@ -12,6 +12,10 @@ export default defineConfig({
 		env: {
 			DATABASE_URL: "postgresql://test:test@localhost:5432/test",
 			NODE_ENV: "test",
+			AWS_REGION: "us-east-1",
+			AWS_COGNITO_USER_POOL_ID: "us-east-1_test123456",
+			AWS_COGNITO_CLIENT_ID: "test-client-id-123456789",
+			AWS_SES_FROM_EMAIL: "test@example.com",
 		},
 	},
 	plugins: [tsconfigPaths()],

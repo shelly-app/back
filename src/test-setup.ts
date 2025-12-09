@@ -1,4 +1,32 @@
+import type { NextFunction, Request, Response } from "express";
 import { vi } from "vitest";
+
+// Mock the authenticate middleware to bypass authentication in tests
+vi.mock("@/common/middleware/authenticate", () => ({
+	authenticate: vi.fn((req: Request, _res: Response, next: NextFunction) => {
+		// Add a test user to the request
+		req.user = {
+			id: 1,
+			cognitoSub: "test-cognito-sub-123",
+			email: "test@example.com",
+			name: "Test User",
+		};
+		next();
+	}),
+}));
+
+// Mock the authorize middleware to bypass authorization in tests
+vi.mock("@/common/middleware/authorize", () => ({
+	authorize: vi.fn(() => (req: Request, _res: Response, next: NextFunction) => {
+		// Add test shelter context
+		req.shelterContext = {
+			shelterId: 1,
+			roleId: 1,
+			roleName: "admin",
+		};
+		next();
+	}),
+}));
 
 // Mock the database module to prevent actual database connections in tests
 vi.mock("@/database/database", () => {

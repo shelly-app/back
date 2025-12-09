@@ -11,11 +11,11 @@ import {
 	UpdateAdoptionRequestSchema,
 } from "@/api/adoptionRequest/adoptionRequestModel";
 import { createApiResponse } from "@/api-docs/openAPIResponseBuilders";
-import { validateRequest } from "@/common/utils/httpHandlers";
-import { adoptionRequestController } from "./adoptionRequestController";
 import { authenticate } from "@/common/middleware/authenticate";
 import { authorize } from "@/common/middleware/authorize";
 import { attachAdoptionRequestShelterContext } from "@/common/middleware/shelterContext";
+import { validateRequest } from "@/common/utils/httpHandlers";
+import { adoptionRequestController } from "./adoptionRequestController";
 
 export const adoptionRequestRegistry = new OpenAPIRegistry();
 export const adoptionRequestRouter: Router = express.Router();

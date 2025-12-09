@@ -7,6 +7,7 @@ import { healthCheckRegistry } from "@/api/healthCheck/healthCheckRouter";
 import { petRegistry } from "@/api/pet/petRouter";
 import { petPhotoRegistry } from "@/api/petPhoto/petPhotoRouter";
 import { shelterRegistry } from "@/api/shelter/shelterRouter";
+import { shelterAccessRequestRegistry } from "@/api/shelterAccessRequest/shelterAccessRequestRouter";
 import { userRegistry } from "@/api/user/userRouter";
 import { vaccinationRegistry } from "@/api/vaccination/vaccinationRouter";
 import { vaccineRegistry } from "@/api/vaccine/vaccineRouter";
@@ -19,6 +20,7 @@ export function generateOpenAPIDocument(): OpenAPIDocument {
 		userRegistry,
 		petRegistry,
 		shelterRegistry,
+		shelterAccessRequestRegistry,
 		adoptionRequestRegistry,
 		eventRegistry,
 		vaccineRegistry,

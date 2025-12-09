@@ -20,8 +20,16 @@ export async function up(db: Kysely<unknown>): Promise<void> {
 		.execute();
 
 	// Create indexes for commonly queried fields
-	await db.schema.createIndex("idx_shelter_access_requests_status").on("shelter_access_requests").column("status").execute();
-	await db.schema.createIndex("idx_shelter_access_requests_created_at").on("shelter_access_requests").column("created_at").execute();
+	await db.schema
+		.createIndex("idx_shelter_access_requests_status")
+		.on("shelter_access_requests")
+		.column("status")
+		.execute();
+	await db.schema
+		.createIndex("idx_shelter_access_requests_created_at")
+		.on("shelter_access_requests")
+		.column("created_at")
+		.execute();
 
 	// Create trigger for updated_at
 	await sql`

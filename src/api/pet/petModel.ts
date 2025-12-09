@@ -1,9 +1,8 @@
 import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 import { z } from "zod";
-
-import { commonValidations } from "@/common/utils/commonValidation";
 import { EventSchema } from "@/api/event/eventModel";
 import { VaccinationSchema } from "@/api/vaccination/vaccinationModel";
+import { commonValidations } from "@/common/utils/commonValidation";
 
 extendZodWithOpenApi(z);
 

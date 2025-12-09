@@ -1,10 +1,9 @@
 import { CognitoJwtVerifier } from "aws-jwt-verify";
 import type { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-
+import { userService } from "@/api/user/userService";
 import { ServiceResponse } from "@/common/models/serviceResponse";
 import { env } from "@/common/utils/envConfig";
-import { userService } from "@/api/user/userService";
 
 // Create verifier instance (singleton)
 // Only create if Cognito credentials are provided
@@ -80,7 +79,7 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
 		};
 
 		next();
-	} catch (error) {
+	} catch (_error) {
 		const response = ServiceResponse.failure("Invalid or expired token", null, StatusCodes.UNAUTHORIZED);
 		res.status(response.statusCode).send(response);
 	}

@@ -1,9 +1,8 @@
 import type { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-
-import { ServiceResponse } from "@/common/models/serviceResponse";
-import { petService } from "@/api/pet/petService";
 import { adoptionRequestService } from "@/api/adoptionRequest/adoptionRequestService";
+import { petService } from "@/api/pet/petService";
+import { ServiceResponse } from "@/common/models/serviceResponse";
 
 /**
  * Middleware to attach shelter context from pet ID
@@ -35,8 +34,12 @@ export const attachPetShelterContext = async (req: Request, res: Response, next:
 		req.params.shelterId = petResult.responseObject.shelterId.toString();
 
 		next();
-	} catch (error) {
-		const response = ServiceResponse.failure("Failed to determine shelter context", null, StatusCodes.INTERNAL_SERVER_ERROR);
+	} catch (_error) {
+		const response = ServiceResponse.failure(
+			"Failed to determine shelter context",
+			null,
+			StatusCodes.INTERNAL_SERVER_ERROR,
+		);
 		res.status(response.statusCode).send(response);
 	}
 };
@@ -85,8 +88,12 @@ export const attachAdoptionRequestShelterContext = async (
 		req.params.shelterId = petResult.responseObject.shelterId.toString();
 
 		next();
-	} catch (error) {
-		const response = ServiceResponse.failure("Failed to determine shelter context", null, StatusCodes.INTERNAL_SERVER_ERROR);
+	} catch (_error) {
+		const response = ServiceResponse.failure(
+			"Failed to determine shelter context",
+			null,
+			StatusCodes.INTERNAL_SERVER_ERROR,
+		);
 		res.status(response.statusCode).send(response);
 	}
 };

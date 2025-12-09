@@ -1,9 +1,8 @@
 import type { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-
-import { ServiceResponse } from "@/common/models/serviceResponse";
 import { assignmentService } from "@/api/assignment/assignmentService";
-import { type RoleName, getRoleName } from "@/common/utils/roleHelpers";
+import { ServiceResponse } from "@/common/models/serviceResponse";
+import { getRoleName, type RoleName } from "@/common/utils/roleHelpers";
 
 /**
  * Authorization middleware factory
@@ -45,7 +44,11 @@ export const authorize = (allowedRoles: RoleName[], shelterIdSource: "params" | 
 				shelterId,
 			});
 
-			if (!assignmentResult.success || !assignmentResult.responseObject || assignmentResult.responseObject.length === 0) {
+			if (
+				!assignmentResult.success ||
+				!assignmentResult.responseObject ||
+				assignmentResult.responseObject.length === 0
+			) {
 				const response = ServiceResponse.failure("You do not have access to this shelter", null, StatusCodes.FORBIDDEN);
 				res.status(response.statusCode).send(response);
 				return;
@@ -75,7 +78,7 @@ export const authorize = (allowedRoles: RoleName[], shelterIdSource: "params" | 
 			};
 
 			next();
-		} catch (error) {
+		} catch (_error) {
 			const response = ServiceResponse.failure("Authorization check failed", null, StatusCodes.INTERNAL_SERVER_ERROR);
 			res.status(response.statusCode).send(response);
 		}

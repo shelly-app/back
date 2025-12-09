@@ -74,7 +74,11 @@ export class UserService {
 	}
 
 	// Syncs a Cognito user to the database (creates or updates)
-	async syncCognitoUser(cognitoData: { cognitoSub: string; email: string; name: string }): Promise<ServiceResponse<User | null>> {
+	async syncCognitoUser(cognitoData: {
+		cognitoSub: string;
+		email: string;
+		name: string;
+	}): Promise<ServiceResponse<User | null>> {
 		try {
 			// Try to find user by Cognito sub
 			let user = await this.userRepository.findByCognitoSubAsync(cognitoData.cognitoSub);

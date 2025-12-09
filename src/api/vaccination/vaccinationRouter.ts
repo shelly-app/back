@@ -9,6 +9,7 @@ import {
 	VaccinationSchema,
 } from "@/api/vaccination/vaccinationModel";
 import { createApiResponse } from "@/api-docs/openAPIResponseBuilders";
+import { authenticate } from "@/common/middleware/authenticate";
 import { validateRequest } from "@/common/utils/httpHandlers";
 import { vaccinationController } from "./vaccinationController";
 
@@ -45,7 +46,12 @@ vaccinationRegistry.registerPath({
 	responses: createApiResponse(VaccinationSchema, "Success"),
 });
 
-vaccinationRouter.post("/", validateRequest(CreateVaccinationSchema), vaccinationController.createVaccination);
+vaccinationRouter.post(
+	"/",
+	authenticate,
+	validateRequest(CreateVaccinationSchema),
+	vaccinationController.createVaccination,
+);
 
 vaccinationRegistry.registerPath({
 	method: "delete",
@@ -55,4 +61,9 @@ vaccinationRegistry.registerPath({
 	responses: createApiResponse(z.null(), "Success"),
 });
 
-vaccinationRouter.delete("/:id", validateRequest(DeleteVaccinationSchema), vaccinationController.deleteVaccination);
+vaccinationRouter.delete(
+	"/:id",
+	authenticate,
+	validateRequest(DeleteVaccinationSchema),
+	vaccinationController.deleteVaccination,
+);

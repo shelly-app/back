@@ -9,6 +9,7 @@ import {
 	GetAssignmentsSchema,
 } from "@/api/assignment/assignmentModel";
 import { createApiResponse } from "@/api-docs/openAPIResponseBuilders";
+import { authenticate } from "@/common/middleware/authenticate";
 import { validateRequest } from "@/common/utils/httpHandlers";
 import { assignmentController } from "./assignmentController";
 
@@ -25,7 +26,7 @@ assignmentRegistry.registerPath({
 	responses: createApiResponse(z.array(AssignmentSchema), "Success"),
 });
 
-assignmentRouter.get("/", validateRequest(GetAssignmentsSchema), assignmentController.getAssignments);
+assignmentRouter.get("/", authenticate, validateRequest(GetAssignmentsSchema), assignmentController.getAssignments);
 
 assignmentRegistry.registerPath({
 	method: "get",
@@ -35,7 +36,7 @@ assignmentRegistry.registerPath({
 	responses: createApiResponse(AssignmentSchema, "Success"),
 });
 
-assignmentRouter.get("/:id", validateRequest(GetAssignmentSchema), assignmentController.getAssignment);
+assignmentRouter.get("/:id", authenticate, validateRequest(GetAssignmentSchema), assignmentController.getAssignment);
 
 assignmentRegistry.registerPath({
 	method: "post",
@@ -45,7 +46,12 @@ assignmentRegistry.registerPath({
 	responses: createApiResponse(AssignmentSchema, "Success"),
 });
 
-assignmentRouter.post("/", validateRequest(CreateAssignmentSchema), assignmentController.createAssignment);
+assignmentRouter.post(
+	"/",
+	authenticate,
+	validateRequest(CreateAssignmentSchema),
+	assignmentController.createAssignment,
+);
 
 assignmentRegistry.registerPath({
 	method: "delete",
@@ -55,4 +61,9 @@ assignmentRegistry.registerPath({
 	responses: createApiResponse(z.null(), "Success"),
 });
 
-assignmentRouter.delete("/:id", validateRequest(DeleteAssignmentSchema), assignmentController.deleteAssignment);
+assignmentRouter.delete(
+	"/:id",
+	authenticate,
+	validateRequest(DeleteAssignmentSchema),
+	assignmentController.deleteAssignment,
+);

@@ -10,6 +10,7 @@ import {
 	UpdateEventSchema,
 } from "@/api/event/eventModel";
 import { createApiResponse } from "@/api-docs/openAPIResponseBuilders";
+import { authenticate } from "@/common/middleware/authenticate";
 import { validateRequest } from "@/common/utils/httpHandlers";
 import { eventController } from "./eventController";
 
@@ -46,7 +47,7 @@ eventRegistry.registerPath({
 	responses: createApiResponse(EventSchema, "Success"),
 });
 
-eventRouter.post("/", validateRequest(CreateEventSchema), eventController.createEvent);
+eventRouter.post("/", authenticate, validateRequest(CreateEventSchema), eventController.createEvent);
 
 eventRegistry.registerPath({
 	method: "patch",
@@ -59,7 +60,7 @@ eventRegistry.registerPath({
 	responses: createApiResponse(EventSchema, "Success"),
 });
 
-eventRouter.patch("/:id", validateRequest(UpdateEventSchema), eventController.updateEvent);
+eventRouter.patch("/:id", authenticate, validateRequest(UpdateEventSchema), eventController.updateEvent);
 
 eventRegistry.registerPath({
 	method: "delete",
@@ -69,4 +70,4 @@ eventRegistry.registerPath({
 	responses: createApiResponse(z.null(), "Success"),
 });
 
-eventRouter.delete("/:id", validateRequest(DeleteEventSchema), eventController.deleteEvent);
+eventRouter.delete("/:id", authenticate, validateRequest(DeleteEventSchema), eventController.deleteEvent);

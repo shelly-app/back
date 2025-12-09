@@ -13,10 +13,10 @@ import {
 	UpdateShelterSchema,
 } from "@/api/shelter/shelterModel";
 import { createApiResponse } from "@/api-docs/openAPIResponseBuilders";
-import { validateRequest } from "@/common/utils/httpHandlers";
-import { shelterController } from "./shelterController";
 import { authenticate } from "@/common/middleware/authenticate";
 import { authorize } from "@/common/middleware/authorize";
+import { validateRequest } from "@/common/utils/httpHandlers";
+import { shelterController } from "./shelterController";
 
 export const shelterRegistry = new OpenAPIRegistry();
 export const shelterRouter: Router = express.Router();
@@ -52,7 +52,7 @@ shelterRegistry.registerPath({
 	responses: createApiResponse(ShelterSchema, "Success"),
 });
 
-shelterRouter.post("/", validateRequest(CreateShelterSchema), shelterController.createShelter);
+shelterRouter.post("/", authenticate, validateRequest(CreateShelterSchema), shelterController.createShelter);
 
 shelterRegistry.registerPath({
 	method: "patch",
@@ -65,7 +65,7 @@ shelterRegistry.registerPath({
 	responses: createApiResponse(ShelterSchema, "Success"),
 });
 
-shelterRouter.patch("/:id", validateRequest(UpdateShelterSchema), shelterController.updateShelter);
+shelterRouter.patch("/:id", authenticate, validateRequest(UpdateShelterSchema), shelterController.updateShelter);
 
 shelterRegistry.registerPath({
 	method: "delete",
@@ -75,7 +75,7 @@ shelterRegistry.registerPath({
 	responses: createApiResponse(z.null(), "Success"),
 });
 
-shelterRouter.delete("/:id", validateRequest(DeleteShelterSchema), shelterController.deleteShelter);
+shelterRouter.delete("/:id", authenticate, validateRequest(DeleteShelterSchema), shelterController.deleteShelter);
 
 // Get shelter members
 shelterRegistry.registerPath({

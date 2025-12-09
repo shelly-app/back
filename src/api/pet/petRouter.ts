@@ -12,11 +12,11 @@ import {
 	UpdatePetSchema,
 } from "@/api/pet/petModel";
 import { createApiResponse } from "@/api-docs/openAPIResponseBuilders";
-import { validateRequest } from "@/common/utils/httpHandlers";
-import { petController } from "./petController";
 import { authenticate } from "@/common/middleware/authenticate";
 import { authorize } from "@/common/middleware/authorize";
 import { attachPetShelterContext } from "@/common/middleware/shelterContext";
+import { validateRequest } from "@/common/utils/httpHandlers";
+import { petController } from "./petController";
 
 export const petRegistry = new OpenAPIRegistry();
 export const petRouter: Router = express.Router();
