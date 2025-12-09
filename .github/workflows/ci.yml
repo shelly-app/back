@@ -19,10 +19,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
-      - uses: biomejs/setup-biome@454fa0d884737805f48d7dc236c1761a0ac3cc13 # v2
-        with:
-          version: latest
-      - run: biome ci .
+      - uses: ./.github/actions/setup-pnpm
+      # Use biome from node_modules to ensure version matches package.json
+      - run: pnpm biome ci .
 
   build:
     name: Build
