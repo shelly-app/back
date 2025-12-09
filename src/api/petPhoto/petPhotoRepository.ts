@@ -9,6 +9,8 @@ interface PetPhotoFilters {
 interface CreatePetPhotoData {
 	petId: number;
 	key: string;
+	contentType?: string;
+	size?: number;
 }
 
 export class PetPhotoRepository {
@@ -31,6 +33,8 @@ export class PetPhotoRepository {
 			id: photo.id,
 			petId: photo.pet_id,
 			key: photo.key,
+			contentType: photo.content_type,
+			size: photo.size,
 			createdAt: photo.created_at,
 			deletedAt: photo.deleted_at,
 		}));
@@ -50,6 +54,8 @@ export class PetPhotoRepository {
 			id: photo.id,
 			petId: photo.pet_id,
 			key: photo.key,
+			contentType: photo.content_type,
+			size: photo.size,
 			createdAt: photo.created_at,
 			deletedAt: photo.deleted_at,
 		};
@@ -61,6 +67,8 @@ export class PetPhotoRepository {
 			.values({
 				pet_id: data.petId,
 				key: data.key,
+				content_type: data.contentType,
+				size: data.size,
 			})
 			.returningAll()
 			.executeTakeFirstOrThrow();
@@ -69,6 +77,8 @@ export class PetPhotoRepository {
 			id: newPhoto.id,
 			petId: newPhoto.pet_id,
 			key: newPhoto.key,
+			contentType: newPhoto.content_type,
+			size: newPhoto.size,
 			createdAt: newPhoto.created_at,
 			deletedAt: newPhoto.deleted_at,
 		};

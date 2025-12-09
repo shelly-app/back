@@ -104,6 +104,8 @@ export interface PetPhotosTable {
 	id: Generated<number>;
 	pet_id: number;
 	key: string;
+	content_type: string | null;
+	size: number | null;
 	created_at: Generated<Timestamp>;
 	deleted_at: Timestamp | null;
 }

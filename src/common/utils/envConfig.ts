@@ -25,6 +25,12 @@ const envSchema = z.object({
 
 	// AWS SES Configuration (optional for email invitations)
 	AWS_SES_FROM_EMAIL: z.string().email().optional(),
+
+	// AWS S3 Configuration
+	AWS_S3_BUCKET_NAME: z.string().min(1).default("pet-photos"),
+	AWS_S3_ENDPOINT: z.string().url().optional(), // For LocalStack, omit for real AWS
+	AWS_ACCESS_KEY_ID: z.string().min(1).default("test"), // Default for LocalStack
+	AWS_SECRET_ACCESS_KEY: z.string().min(1).default("test"), // Default for LocalStack
 });
 
 const parsedEnv = envSchema.safeParse(process.env);

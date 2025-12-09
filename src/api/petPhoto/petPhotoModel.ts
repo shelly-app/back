@@ -10,6 +10,8 @@ export const PetPhotoSchema = z.object({
 	id: z.number(),
 	petId: z.number(),
 	key: z.string(),
+	contentType: z.string().nullable(),
+	size: z.number().nullable(),
 	createdAt: z.date(),
 	deletedAt: z.date().nullable(),
 });
@@ -30,9 +32,13 @@ export const GetPetPhotoSchema = z.object({
 // Input Validation for 'POST pet-photos' endpoint
 export const CreatePetPhotoSchema = z.object({
 	body: z.object({
-		petId: z.number().int().positive("Pet ID must be a positive integer"),
-		key: z.string().min(1, "Key is required"),
+		petId: z.coerce.number().int().positive("Pet ID must be a positive integer"),
 	}),
+});
+
+// Input Validation for 'GET pet-photos/:id/url' endpoint
+export const GetPetPhotoUrlSchema = z.object({
+	params: z.object({ id: commonValidations.id }),
 });
 
 // Input Validation for 'DELETE pet-photos/:id' endpoint
