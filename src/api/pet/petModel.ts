@@ -12,6 +12,27 @@ export const PetColorSchema = z.object({
 	color: z.string(),
 });
 
+// Lookup schemas for nested objects
+export const PetSpeciesSchema = z.object({
+	id: z.number(),
+	species: z.string(),
+});
+
+export const SexSchema = z.object({
+	id: z.number(),
+	sex: z.string(),
+});
+
+export const PetStatusSchema = z.object({
+	id: z.number(),
+	status: z.string(),
+});
+
+export const PetSizeSchema = z.object({
+	id: z.number(),
+	size: z.string(),
+});
+
 // Pet with all related data
 export type Pet = z.infer<typeof PetSchema>;
 export const PetSchema = z.object({
@@ -19,10 +40,10 @@ export const PetSchema = z.object({
 	name: z.string(),
 	birthdate: z.string().nullable(),
 	breed: z.string().nullable(),
-	speciesId: z.number(),
-	sexId: z.number(),
-	statusId: z.number(),
-	sizeId: z.number(),
+	species: PetSpeciesSchema,
+	sex: SexSchema,
+	status: PetStatusSchema,
+	size: PetSizeSchema,
 	description: z.string().nullable(),
 	shelterId: z.number(),
 	colors: z.array(PetColorSchema),
