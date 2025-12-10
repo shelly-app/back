@@ -18,7 +18,9 @@
 		"db:down": "docker compose down",
 		"db:migrate": "tsx src/database/migrator.ts up",
 		"db:migrate:down": "tsx src/database/migrator.ts down",
+		"db:seed": "tsx src/database/seed.ts",
 		"db:setup": "pnpm db:up && pnpm db:migrate",
+		"db:reset": "pnpm db:migrate:down && pnpm db:migrate && pnpm db:seed",
 		"dev": "pnpm db:setup && pnpm start:dev"
 	},
 	"dependencies": {
