@@ -39,10 +39,10 @@ export class PetRepository {
 	async findAllAsync(filters: PetFilters = {}, includeDeleted = false): Promise<Pet[]> {
 		let query = db
 			.selectFrom("pets")
-			.leftJoin("pet_species", "pets.species_id", "pet_species.id")
-			.leftJoin("sexes", "pets.sex_id", "sexes.id")
-			.leftJoin("pet_statuses", "pets.status_id", "pet_statuses.id")
-			.leftJoin("pet_sizes", "pets.size_id", "pet_sizes.id")
+			.innerJoin("pet_species", "pets.species_id", "pet_species.id")
+			.innerJoin("sexes", "pets.sex_id", "sexes.id")
+			.innerJoin("pet_statuses", "pets.status_id", "pet_statuses.id")
+			.innerJoin("pet_sizes", "pets.size_id", "pet_sizes.id")
 			.select([
 				"pets.id",
 				"pets.name",
@@ -136,10 +136,10 @@ export class PetRepository {
 	async findByIdAsync(id: number): Promise<Pet | null> {
 		const pet = await db
 			.selectFrom("pets")
-			.leftJoin("pet_species", "pets.species_id", "pet_species.id")
-			.leftJoin("sexes", "pets.sex_id", "sexes.id")
-			.leftJoin("pet_statuses", "pets.status_id", "pet_statuses.id")
-			.leftJoin("pet_sizes", "pets.size_id", "pet_sizes.id")
+			.innerJoin("pet_species", "pets.species_id", "pet_species.id")
+			.innerJoin("sexes", "pets.sex_id", "sexes.id")
+			.innerJoin("pet_statuses", "pets.status_id", "pet_statuses.id")
+			.innerJoin("pet_sizes", "pets.size_id", "pet_sizes.id")
 			.select([
 				"pets.id",
 				"pets.name",
@@ -375,10 +375,10 @@ export class PetRepository {
 		// Fetch the complete pet with nested lookup objects (including the archived one)
 		const pet = await db
 			.selectFrom("pets")
-			.leftJoin("pet_species", "pets.species_id", "pet_species.id")
-			.leftJoin("sexes", "pets.sex_id", "sexes.id")
-			.leftJoin("pet_statuses", "pets.status_id", "pet_statuses.id")
-			.leftJoin("pet_sizes", "pets.size_id", "pet_sizes.id")
+			.innerJoin("pet_species", "pets.species_id", "pet_species.id")
+			.innerJoin("sexes", "pets.sex_id", "sexes.id")
+			.innerJoin("pet_statuses", "pets.status_id", "pet_statuses.id")
+			.innerJoin("pet_sizes", "pets.size_id", "pet_sizes.id")
 			.select([
 				"pets.id",
 				"pets.name",
