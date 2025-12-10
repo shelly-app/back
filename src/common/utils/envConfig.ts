@@ -18,7 +18,13 @@ const envSchema = z.object({
 
 	DATABASE_URL: z.string().url(),
 
-	// AWS Cognito Configuration (optional during development, required in production)
+	// Authentication Configuration
+	DISABLE_AUTH: z
+		.string()
+		.transform((val) => val === "true")
+		.default("false"), // Set to "true" to bypass authentication in development
+
+	// AWS Cognito Configuration (required when DISABLE_AUTH is false)
 	AWS_REGION: z.string().min(1).default("us-east-1"),
 	AWS_COGNITO_USER_POOL_ID: z.string().min(1).optional(),
 	AWS_COGNITO_CLIENT_ID: z.string().min(1).optional(),

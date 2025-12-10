@@ -20,10 +20,24 @@ if (env.AWS_COGNITO_USER_POOL_ID && env.AWS_COGNITO_CLIENT_ID) {
 /**
  * Authentication middleware
  * Verifies Cognito JWT token and syncs user to database
+ * In development mode with DISABLE_AUTH=true, bypasses authentication with a test user
  */
 export const authenticate = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 	try {
-		// Check if Cognito is configured
+		// Development mode: Bypass authentication if DISABLE_AUTH is enabled
+		if (env.DISABLE_AUTH) {
+			// Attach a test user to the request for development
+			req.user = {
+				id: 1,
+				cognitoSub: "dev-bypass-user",
+				email: "dev@example.com",
+				name: "Development User",
+			};
+			next();
+			return;
+		}
+
+		// Production mode: Require Cognito configuration
 		if (!verifier) {
 			const response = ServiceResponse.failure(
 				"Authentication not configured. Please set AWS_COGNITO_USER_POOL_ID and AWS_COGNITO_CLIENT_ID environment variables.",

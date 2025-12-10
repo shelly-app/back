@@ -1,9 +1,13 @@
 #!/bin/bash
 
-# LocalStack S3 bucket initialization script
+# LocalStack S3 initialization script
 # This script runs when LocalStack is ready
 
-echo "Initializing LocalStack S3 bucket..."
+set -e
+
+echo "========================================="
+echo "Initializing LocalStack S3 Service..."
+echo "========================================="
 
 # Create S3 bucket
 awslocal s3 mb s3://pet-photos
@@ -26,4 +30,12 @@ awslocal s3api put-bucket-cors \
 # Set bucket ACL to private (signed URLs will provide access)
 awslocal s3api put-bucket-acl --bucket pet-photos --acl private
 
-echo "S3 bucket 'pet-photos' created and configured successfully!"
+echo "✓ S3 bucket 'pet-photos' created and configured"
+echo ""
+echo "========================================="
+echo "LocalStack initialization complete!"
+echo "========================================="
+echo ""
+echo "Note: Authentication is disabled in development mode."
+echo "See README.md for authentication testing strategies."
+echo ""
