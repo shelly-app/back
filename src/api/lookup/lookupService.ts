@@ -18,7 +18,7 @@ export class LookupService {
 			return ServiceResponse.success("Pet species retrieved", species);
 		} catch (error) {
 			logger.error(error);
-			return ServiceResponse.failure("Error retrieving pet species", null, StatusCodes.INTERNAL_SERVER_ERROR);
+			return ServiceResponse.failure("Error retrieving pet species", [], StatusCodes.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -28,7 +28,7 @@ export class LookupService {
 			return ServiceResponse.success("Sexes retrieved", sexes);
 		} catch (error) {
 			logger.error(error);
-			return ServiceResponse.failure("Error retrieving sexes", null, StatusCodes.INTERNAL_SERVER_ERROR);
+			return ServiceResponse.failure("Error retrieving sexes", [], StatusCodes.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -38,7 +38,7 @@ export class LookupService {
 			return ServiceResponse.success("Pet statuses retrieved", statuses);
 		} catch (error) {
 			logger.error(error);
-			return ServiceResponse.failure("Error retrieving pet statuses", null, StatusCodes.INTERNAL_SERVER_ERROR);
+			return ServiceResponse.failure("Error retrieving pet statuses", [], StatusCodes.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -48,7 +48,7 @@ export class LookupService {
 			return ServiceResponse.success("Pet sizes retrieved", sizes);
 		} catch (error) {
 			logger.error(error);
-			return ServiceResponse.failure("Error retrieving pet sizes", null, StatusCodes.INTERNAL_SERVER_ERROR);
+			return ServiceResponse.failure("Error retrieving pet sizes", [], StatusCodes.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -58,7 +58,7 @@ export class LookupService {
 			return ServiceResponse.success("Pet colors retrieved", colors);
 		} catch (error) {
 			logger.error(error);
-			return ServiceResponse.failure("Error retrieving pet colors", null, StatusCodes.INTERNAL_SERVER_ERROR);
+			return ServiceResponse.failure("Error retrieving pet colors", [], StatusCodes.INTERNAL_SERVER_ERROR);
 		}
 	}
 }
