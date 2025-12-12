@@ -5,6 +5,7 @@ import {
 	PutObjectCommand,
 	type PutObjectCommandInput,
 	S3Client,
+	type S3ClientConfig,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { env } from "@/common/utils/envConfig";
@@ -18,7 +19,7 @@ export class S3Service {
 		this.bucketName = env.AWS_S3_BUCKET_NAME;
 
 		// Configure S3 client with LocalStack endpoint for local/test environments
-		const clientConfig: any = {
+		const clientConfig: S3ClientConfig = {
 			region: env.AWS_REGION,
 			credentials: {
 				accessKeyId: env.AWS_ACCESS_KEY_ID,
@@ -128,12 +129,12 @@ export class S3Service {
 				}),
 			);
 			return true;
-		} catch (error: any) {
+		} catch (error: unknown) {
 			// NoSuchKey error means bucket is accessible (which is good)
-			if (error.name === "NoSuchKey") {
+			if (error instanceof Error && error.name === "NoSuchKey") {
 				return true;
 			}
-			logger.error("S3 health check failed", error);
+			logger.error(`S3 health check failed: ${error instanceof Error ? error.message : String(error)}`);
 			return false;
 		}
 	}

@@ -9,7 +9,7 @@ vi.mock("@aws-sdk/s3-request-presigner");
 
 describe("S3Service", () => {
 	let s3Service: S3Service;
-	let mockS3Client: any;
+	let mockS3Client: { send: ReturnType<typeof vi.fn> };
 
 	beforeEach(() => {
 		// Reset mocks
@@ -19,6 +19,7 @@ describe("S3Service", () => {
 		mockS3Client = {
 			send: vi.fn(),
 		};
+		// biome-ignore lint/suspicious/noExplicitAny: Mocking requires any
 		(S3Client as any).mockImplementation(() => mockS3Client);
 
 		// Create service instance
@@ -83,6 +84,7 @@ describe("S3Service", () => {
 			const key = "pets/1/12345-uuid.jpg";
 			const expectedUrl = "https://s3.amazonaws.com/signed-url";
 
+			// biome-ignore lint/suspicious/noExplicitAny: Mocking requires any
 			(getSignedUrl as any).mockResolvedValue(expectedUrl);
 
 			// Act
@@ -103,6 +105,7 @@ describe("S3Service", () => {
 			const customExpiration = 3600; // 1 hour
 			const expectedUrl = "https://s3.amazonaws.com/signed-url";
 
+			// biome-ignore lint/suspicious/noExplicitAny: Mocking requires any
 			(getSignedUrl as any).mockResolvedValue(expectedUrl);
 
 			// Act
@@ -116,6 +119,7 @@ describe("S3Service", () => {
 			// Arrange
 			const key = "pets/1/12345-uuid.jpg";
 
+			// biome-ignore lint/suspicious/noExplicitAny: Mocking requires any
 			(getSignedUrl as any).mockRejectedValue(new Error("Signing error"));
 
 			// Act & Assert
@@ -151,7 +155,7 @@ describe("S3Service", () => {
 	describe("checkHealth", () => {
 		it("should return true when NoSuchKey error occurs (bucket accessible)", async () => {
 			// Arrange
-			const error: any = new Error("NoSuchKey");
+			const error = new Error("NoSuchKey");
 			error.name = "NoSuchKey";
 			mockS3Client.send.mockRejectedValue(error);
 

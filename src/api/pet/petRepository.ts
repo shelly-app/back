@@ -263,13 +263,7 @@ export class PetRepository {
 			.selectFrom("pets")
 			.innerJoin("pet_species", "pets.species_id", "pet_species.id")
 			.innerJoin("pet_statuses", "pets.status_id", "pet_statuses.id")
-			.select([
-				"pets.id",
-				"pets.name",
-				"pets.breed",
-				"pet_species.species",
-				"pet_statuses.status",
-			]);
+			.select(["pets.id", "pets.name", "pets.breed", "pet_species.species", "pet_statuses.status"]);
 
 		// Filter out deleted pets by default
 		if (!includeDeleted) {
@@ -315,7 +309,7 @@ export class PetRepository {
 						.executeTakeFirst();
 
 					profilePhotoKey = profilePhoto?.key || null;
-				} catch (error) {
+				} catch (_error) {
 					// Table might not exist in test environment, ignore gracefully
 					profilePhotoKey = null;
 				}
