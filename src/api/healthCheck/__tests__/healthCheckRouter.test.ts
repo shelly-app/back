@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import request from "supertest";
-import { beforeAll, vi } from "vitest";
+import { vi } from "vitest";
 
 import type { ServiceResponse } from "@/common/models/serviceResponse";
 import { app } from "@/server";

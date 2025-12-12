@@ -6,6 +6,7 @@ import { adoptionRequestRouter } from "@/api/adoptionRequest/adoptionRequestRout
 import { assignmentRouter } from "@/api/assignment/assignmentRouter";
 import { eventRouter } from "@/api/event/eventRouter";
 import { healthCheckRouter } from "@/api/healthCheck/healthCheckRouter";
+import { lookupRouter } from "@/api/lookup/lookupRouter";
 import { petRouter } from "@/api/pet/petRouter";
 import { petPhotoRouter } from "@/api/petPhoto/petPhotoRouter";
 import { shelterRouter } from "@/api/shelter/shelterRouter";
@@ -47,6 +48,7 @@ app.use("/vaccines", vaccineRouter);
 app.use("/vaccinations", vaccinationRouter);
 app.use("/pet-photos", petPhotoRouter);
 app.use("/assignments", assignmentRouter);
+app.use("/lookups", lookupRouter);
 
 // Swagger UI
 app.use("/api-docs", openAPIRouter);

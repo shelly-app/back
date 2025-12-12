@@ -4,6 +4,7 @@ import { adoptionRequestRegistry } from "@/api/adoptionRequest/adoptionRequestRo
 import { assignmentRegistry } from "@/api/assignment/assignmentRouter";
 import { eventRegistry } from "@/api/event/eventRouter";
 import { healthCheckRegistry } from "@/api/healthCheck/healthCheckRouter";
+import { lookupRegistry } from "@/api/lookup/lookupRouter";
 import { petRegistry } from "@/api/pet/petRouter";
 import { petPhotoRegistry } from "@/api/petPhoto/petPhotoRouter";
 import { shelterRegistry } from "@/api/shelter/shelterRouter";
@@ -27,6 +28,7 @@ export function generateOpenAPIDocument(): OpenAPIDocument {
 		vaccinationRegistry,
 		petPhotoRegistry,
 		assignmentRegistry,
+		lookupRegistry,
 	]);
 	const generator = new OpenApiGeneratorV3(registry.definitions);
 
@@ -38,7 +40,7 @@ export function generateOpenAPIDocument(): OpenAPIDocument {
 		},
 		externalDocs: {
 			description: "View the raw OpenAPI Specification in JSON format",
-			url: "/swagger.json",
+			url: "/api-docs/swagger.json",
 		},
 	});
 }
