@@ -16,7 +16,7 @@ describe("User API Endpoints", () => {
 			expect(response.statusCode).toEqual(StatusCodes.OK);
 			expect(responseBody.success).toBeTruthy();
 			expect(responseBody.message).toContain("Users found");
-			expect(Array.isArray(responseBody.responseObject)).toBeTruthy();
+			expect(Array.isArray(responseBody.data)).toBeTruthy();
 		});
 	});
 
@@ -33,7 +33,7 @@ describe("User API Endpoints", () => {
 			expect(response.statusCode).toEqual(StatusCodes.NOT_FOUND);
 			expect(responseBody.success).toBeFalsy();
 			expect(responseBody.message).toContain("User not found");
-			expect(responseBody.responseObject).toBeNull();
+			expect(responseBody.data).toBeNull();
 		});
 
 		it("should return a bad request for invalid ID format", async () => {
@@ -46,7 +46,7 @@ describe("User API Endpoints", () => {
 			expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
 			expect(responseBody.success).toBeFalsy();
 			expect(responseBody.message).toContain("Invalid input");
-			expect(responseBody.responseObject).toBeNull();
+			expect(responseBody.data).toBeNull();
 		});
 	});
 });

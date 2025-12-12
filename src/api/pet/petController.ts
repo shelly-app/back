@@ -11,13 +11,15 @@ class PetController {
 			sizeId: req.query.sizeId ? Number(req.query.sizeId) : undefined,
 			colorId: req.query.colorId ? Number(req.query.colorId) : undefined,
 		};
-		const serviceResponse = await petService.findAll(filters);
+		// Use new simplified list endpoint with profile photos
+		const serviceResponse = await petService.findAllForList(filters);
 		res.status(serviceResponse.statusCode).send(serviceResponse);
 	};
 
 	public getPet: RequestHandler = async (req: Request, res: Response) => {
 		const id = Number.parseInt(req.params.id as string, 10);
-		const serviceResponse = await petService.findById(id);
+		// Use new detailed endpoint with photos, events, vaccinations
+		const serviceResponse = await petService.findByIdForDetail(id);
 		res.status(serviceResponse.statusCode).send(serviceResponse);
 	};
 

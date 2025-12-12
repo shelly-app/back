@@ -63,6 +63,38 @@ export const PetDetailSchema = PetSchema.extend({
 	vaccinations: z.array(VaccinationWithVaccineNameSchema),
 });
 
+// Pet list item (simplified response for GET /pets)
+export type PetListItem = z.infer<typeof PetListItemSchema>;
+export const PetListItemSchema = z.object({
+	id: z.number(),
+	name: z.string(),
+	species: z.string(),
+	breed: z.string().nullable(),
+	status: z.string(),
+	profilePhotoUrl: z.string().nullable(),
+});
+
+// Pet detail response (complete info for GET /pets/:id)
+export type PetDetailResponse = z.infer<typeof PetDetailResponseSchema>;
+export const PetDetailResponseSchema = z.object({
+	id: z.number(),
+	name: z.string(),
+	species: z.string(),
+	breed: z.string().nullable(),
+	status: z.string(),
+	birthdate: z.string().nullable(),
+	sex: z.string(),
+	size: z.string(),
+	description: z.string().nullable(),
+	profilePhotoUrl: z.string().nullable(),
+	colors: z.array(z.string()),
+	photos: z.array(z.string()),
+	events: z.array(EventSchema),
+	vaccinations: z.array(VaccinationWithVaccineNameSchema),
+	createdAt: z.date(),
+	updatedAt: z.date(),
+});
+
 // Input Validation for 'GET pets' endpoint
 export const GetPetsSchema = z.object({
 	query: z.object({

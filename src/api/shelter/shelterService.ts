@@ -162,24 +162,24 @@ export class ShelterService {
 		try {
 			// First check if shelter exists
 			const shelterResult = await this.findById(shelterId);
-			if (!shelterResult.success || !shelterResult.responseObject) {
+			if (!shelterResult.success || !shelterResult.data) {
 				return ServiceResponse.failure("Shelter not found", null, StatusCodes.NOT_FOUND);
 			}
-			const shelter = shelterResult.responseObject;
+			const shelter = shelterResult.data;
 
 			// Check if user exists by email, or create placeholder
 			const userResult = await userService.findByEmail(email);
 			let userId: number;
 
-			if (userResult.success && userResult.responseObject) {
-				userId = userResult.responseObject.id;
+			if (userResult.success && userResult.data) {
+				userId = userResult.data.id;
 			} else {
 				// Create placeholder user
 				const createUserResult = await userService.createFromEmail(email);
-				if (!createUserResult.success || !createUserResult.responseObject) {
+				if (!createUserResult.success || !createUserResult.data) {
 					return ServiceResponse.failure("Failed to create user", null, StatusCodes.INTERNAL_SERVER_ERROR);
 				}
-				userId = createUserResult.responseObject.id;
+				userId = createUserResult.data.id;
 			}
 
 			// Check if assignment already exists
@@ -188,7 +188,7 @@ export class ShelterService {
 				shelterId,
 			});
 
-			if (existingAssignmentResult.success && existingAssignmentResult.responseObject?.length) {
+			if (existingAssignmentResult.success && existingAssignmentResult.data?.length) {
 				return ServiceResponse.failure("User is already a member of this shelter", null, StatusCodes.CONFLICT);
 			}
 
@@ -200,7 +200,7 @@ export class ShelterService {
 				shelterId,
 			});
 
-			if (!assignmentResult.success || !assignmentResult.responseObject) {
+			if (!assignmentResult.success || !assignmentResult.data) {
 				return ServiceResponse.failure("Failed to create assignment", null, StatusCodes.INTERNAL_SERVER_ERROR);
 			}
 
@@ -220,11 +220,11 @@ export class ShelterService {
 			// Return the new member details
 			const member: ShelterMember = {
 				userId,
-				userName: userResult.responseObject?.name || email,
+				userName: userResult.data?.name || email,
 				userEmail: email,
 				roleId,
 				roleName,
-				assignmentId: assignmentResult.responseObject.id,
+				assignmentId: assignmentResult.data.id,
 			};
 
 			return ServiceResponse.success<ShelterMember>("Member invited successfully", member, StatusCodes.CREATED);

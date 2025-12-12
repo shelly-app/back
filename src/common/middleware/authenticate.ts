@@ -72,7 +72,7 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
 			name: (payload.name as string) || (payload.email as string),
 		});
 
-		if (!dbUserResult.success || !dbUserResult.responseObject) {
+		if (!dbUserResult.success || !dbUserResult.data) {
 			const response = ServiceResponse.failure(
 				"Failed to sync user with database",
 				null,
@@ -82,7 +82,7 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
 			return;
 		}
 
-		const dbUser = dbUserResult.responseObject;
+		const dbUser = dbUserResult.data;
 
 		// Attach user to request
 		req.user = {

@@ -19,7 +19,7 @@ describe("Health Check API endpoints", () => {
 
 		expect(response.statusCode).toEqual(StatusCodes.OK);
 		expect(result.success).toBeTruthy();
-		expect(result.responseObject).toEqual({ status: "healthy", s3: true });
+		expect(result.data).toEqual({ status: "healthy", s3: true });
 		expect(result.message).toEqual("Service health check");
 	});
 });

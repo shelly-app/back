@@ -44,18 +44,14 @@ export const authorize = (allowedRoles: RoleName[], shelterIdSource: "params" | 
 				shelterId,
 			});
 
-			if (
-				!assignmentResult.success ||
-				!assignmentResult.responseObject ||
-				assignmentResult.responseObject.length === 0
-			) {
+			if (!assignmentResult.success || !assignmentResult.data || assignmentResult.data.length === 0) {
 				const response = ServiceResponse.failure("You do not have access to this shelter", null, StatusCodes.FORBIDDEN);
 				res.status(response.statusCode).send(response);
 				return;
 			}
 
 			// Get user's role for this shelter (take first assignment if multiple)
-			const assignment = assignmentResult.responseObject[0];
+			const assignment = assignmentResult.data[0];
 			const roleId = assignment.roleId;
 			const roleName = getRoleName(roleId);
 

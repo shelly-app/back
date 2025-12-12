@@ -7,7 +7,9 @@ import {
 	DeletePetSchema,
 	GetPetSchema,
 	GetPetsSchema,
+	PetDetailResponseSchema,
 	PetDetailSchema,
+	PetListItemSchema,
 	PetSchema,
 	UpdatePetSchema,
 } from "@/api/pet/petModel";
@@ -23,13 +25,15 @@ export const petRouter: Router = express.Router();
 
 petRegistry.register("Pet", PetSchema);
 petRegistry.register("PetDetail", PetDetailSchema);
+petRegistry.register("PetListItem", PetListItemSchema);
+petRegistry.register("PetDetailResponse", PetDetailResponseSchema);
 
 petRegistry.registerPath({
 	method: "get",
 	path: "/pets",
 	tags: ["Pet"],
 	request: { query: GetPetsSchema.shape.query },
-	responses: createApiResponse(z.array(PetSchema), "Success"),
+	responses: createApiResponse(z.array(PetListItemSchema), "Success"),
 });
 
 petRouter.get("/", validateRequest(GetPetsSchema), petController.getPets);
@@ -39,7 +43,7 @@ petRegistry.registerPath({
 	path: "/pets/{id}",
 	tags: ["Pet"],
 	request: { params: GetPetSchema.shape.params },
-	responses: createApiResponse(PetDetailSchema, "Success"),
+	responses: createApiResponse(PetDetailResponseSchema, "Success"),
 });
 
 petRouter.get("/:id", validateRequest(GetPetSchema), petController.getPet);
