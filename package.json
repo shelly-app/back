@@ -21,7 +21,8 @@
 		"db:seed": "tsx src/database/seed.ts",
 		"db:setup": "pnpm db:up && pnpm db:migrate",
 		"db:reset": "pnpm db:migrate:down && pnpm db:migrate && pnpm db:seed",
-		"dev": "pnpm db:setup && pnpm start:dev"
+		"dev": "pnpm db:setup && pnpm start:dev",
+		"export:openapi": "tsx src/scripts/export-openapi-spec.ts"
 	},
 	"dependencies": {
 		"@asteasolutions/zod-to-openapi": "7.3.4",
