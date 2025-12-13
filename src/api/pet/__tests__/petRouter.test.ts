@@ -16,7 +16,7 @@ describe("Pet API Endpoints", () => {
 			expect(response.statusCode).toEqual(StatusCodes.OK);
 			expect(responseBody.success).toBeTruthy();
 			expect(responseBody.message).toContain("Pets found");
-			expect(Array.isArray(responseBody.responseObject)).toBeTruthy();
+			expect(Array.isArray(responseBody.data)).toBeTruthy();
 		});
 
 		it("should filter pets by species", async () => {
@@ -53,7 +53,7 @@ describe("Pet API Endpoints", () => {
 			expect(response.statusCode).toEqual(StatusCodes.NOT_FOUND);
 			expect(responseBody.success).toBeFalsy();
 			expect(responseBody.message).toContain("Pet not found");
-			expect(responseBody.responseObject).toBeNull();
+			expect(responseBody.data).toBeNull();
 		});
 
 		it("should return a bad request for invalid ID format", async () => {
@@ -66,7 +66,7 @@ describe("Pet API Endpoints", () => {
 			expect(response.statusCode).toEqual(StatusCodes.BAD_REQUEST);
 			expect(responseBody.success).toBeFalsy();
 			expect(responseBody.message).toContain("Invalid input");
-			expect(responseBody.responseObject).toBeNull();
+			expect(responseBody.data).toBeNull();
 		});
 	});
 

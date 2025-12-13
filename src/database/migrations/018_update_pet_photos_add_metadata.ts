@@ -1,6 +1,6 @@
 import type { Kysely } from "kysely";
 
-export async function up(db: Kysely<any>): Promise<void> {
+export async function up(db: Kysely<unknown>): Promise<void> {
 	await db.schema
 		.alterTable("pet_photos")
 		.addColumn("content_type", "varchar(100)")
@@ -8,6 +8,6 @@ export async function up(db: Kysely<any>): Promise<void> {
 		.execute();
 }
 
-export async function down(db: Kysely<any>): Promise<void> {
+export async function down(db: Kysely<unknown>): Promise<void> {
 	await db.schema.alterTable("pet_photos").dropColumn("content_type").dropColumn("size").execute();
 }

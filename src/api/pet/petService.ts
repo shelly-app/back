@@ -1,8 +1,9 @@
 import { StatusCodes } from "http-status-codes";
 
-import type { Pet, PetDetail } from "@/api/pet/petModel";
+import type { Pet, PetDetail, PetDetailResponse, PetListItem } from "@/api/pet/petModel";
 import { PetRepository } from "@/api/pet/petRepository";
 import { ServiceResponse } from "@/common/models/serviceResponse";
+import { s3Service } from "@/common/services/s3Service";
 import { logger } from "@/server";
 
 interface PetFilters {
@@ -134,6 +135,94 @@ export class PetService {
 			const errorMessage = `Error archiving pet with id ${id}: ${(ex as Error).message}`;
 			logger.error(errorMessage);
 			return ServiceResponse.failure("An error occurred while archiving pet.", null, StatusCodes.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	// NEW: Retrieves simplified pet list with profile photos (for GET /pets)
+	async findAllForList(filters: PetFilters = {}): Promise<ServiceResponse<PetListItem[] | null>> {
+		try {
+			const pets = await this.petRepository.findAllForListAsync(filters);
+			if (!pets || pets.length === 0) {
+				return ServiceResponse.failure("No Pets found", null, StatusCodes.NOT_FOUND);
+			}
+
+			// Generate signed URLs for profile photos
+			const petsWithSignedUrls = await Promise.all(
+				pets.map(async (pet) => {
+					let profilePhotoUrl: string | null = null;
+
+					if (pet.profilePhotoUrl) {
+						try {
+							profilePhotoUrl = await s3Service.getPhotoUrl(pet.profilePhotoUrl);
+						} catch (error) {
+							logger.error(`Failed to generate S3 URL for pet ${pet.id}: ${(error as Error).message}`);
+							// Keep as null if URL generation fails
+						}
+					}
+
+					return {
+						...pet,
+						profilePhotoUrl,
+					};
+				}),
+			);
+
+			return ServiceResponse.success<PetListItem[]>("Pets found", petsWithSignedUrls);
+		} catch (ex) {
+			const errorMessage = `Error finding all pets: ${(ex as Error).message}`;
+			logger.error(errorMessage);
+			return ServiceResponse.failure(
+				"An error occurred while retrieving pets.",
+				null,
+				StatusCodes.INTERNAL_SERVER_ERROR,
+			);
+		}
+	}
+
+	// NEW: Retrieves detailed pet info with all photos, events, vaccinations (for GET /pets/:id)
+	async findByIdForDetail(id: number): Promise<ServiceResponse<PetDetailResponse | null>> {
+		try {
+			const pet = await this.petRepository.findByIdForDetailAsync(id);
+			if (!pet) {
+				return ServiceResponse.failure("Pet not found", null, StatusCodes.NOT_FOUND);
+			}
+
+			// Generate signed URLs for profile photo
+			let profilePhotoUrl: string | null = null;
+			if (pet.profilePhotoUrl) {
+				try {
+					profilePhotoUrl = await s3Service.getPhotoUrl(pet.profilePhotoUrl);
+				} catch (error) {
+					logger.error(`Failed to generate profile photo URL for pet ${id}: ${(error as Error).message}`);
+				}
+			}
+
+			// Generate signed URLs for all photos
+			const photoUrls = await Promise.all(
+				pet.photos.map(async (photoKey) => {
+					try {
+						return await s3Service.getPhotoUrl(photoKey);
+					} catch (error) {
+						logger.error(`Failed to generate photo URL for key ${photoKey}: ${(error as Error).message}`);
+						return null;
+					}
+				}),
+			);
+
+			// Filter out null URLs (failed generations)
+			const validPhotoUrls = photoUrls.filter((url): url is string => url !== null);
+
+			const petWithSignedUrls: PetDetailResponse = {
+				...pet,
+				profilePhotoUrl,
+				photos: validPhotoUrls,
+			};
+
+			return ServiceResponse.success<PetDetailResponse>("Pet found", petWithSignedUrls);
+		} catch (ex) {
+			const errorMessage = `Error finding pet with id ${id}: ${(ex as Error).message}`;
+			logger.error(errorMessage);
+			return ServiceResponse.failure("An error occurred while finding pet.", null, StatusCodes.INTERNAL_SERVER_ERROR);
 		}
 	}
 }

@@ -55,7 +55,7 @@ describe("userService", () => {
 			expect(result.statusCode).toEqual(StatusCodes.OK);
 			expect(result.success).toBeTruthy();
 			expect(result.message).equals("Users found");
-			expect(result.responseObject).toEqual(mockUsers);
+			expect(result.data).toEqual(mockUsers);
 		});
 
 		it("returns a not found error for no users found", async () => {
@@ -69,7 +69,7 @@ describe("userService", () => {
 			expect(result.statusCode).toEqual(StatusCodes.NOT_FOUND);
 			expect(result.success).toBeFalsy();
 			expect(result.message).equals("No Users found");
-			expect(result.responseObject).toBeNull();
+			expect(result.data).toBeNull();
 		});
 
 		it("handles errors for findAllAsync", async () => {
@@ -83,7 +83,7 @@ describe("userService", () => {
 			expect(result.statusCode).toEqual(StatusCodes.INTERNAL_SERVER_ERROR);
 			expect(result.success).toBeFalsy();
 			expect(result.message).equals("An error occurred while retrieving users.");
-			expect(result.responseObject).toBeNull();
+			expect(result.data).toBeNull();
 		});
 	});
 
@@ -101,7 +101,7 @@ describe("userService", () => {
 			expect(result.statusCode).toEqual(StatusCodes.OK);
 			expect(result.success).toBeTruthy();
 			expect(result.message).equals("User found");
-			expect(result.responseObject).toEqual(mockUser);
+			expect(result.data).toEqual(mockUser);
 		});
 
 		it("handles errors for findByIdAsync", async () => {
@@ -116,7 +116,7 @@ describe("userService", () => {
 			expect(result.statusCode).toEqual(StatusCodes.INTERNAL_SERVER_ERROR);
 			expect(result.success).toBeFalsy();
 			expect(result.message).equals("An error occurred while finding user.");
-			expect(result.responseObject).toBeNull();
+			expect(result.data).toBeNull();
 		});
 
 		it("returns a not found error for non-existent ID", async () => {
@@ -131,7 +131,7 @@ describe("userService", () => {
 			expect(result.statusCode).toEqual(StatusCodes.NOT_FOUND);
 			expect(result.success).toBeFalsy();
 			expect(result.message).equals("User not found");
-			expect(result.responseObject).toBeNull();
+			expect(result.data).toBeNull();
 		});
 	});
 });

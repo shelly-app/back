@@ -72,7 +72,7 @@ async function seed() {
 		const whiteId = getColorId("white");
 		const brownId = getColorId("brown");
 		const goldenId = getColorId("golden");
-		const grayId = getColorId("gray");
+		const _grayId = getColorId("gray");
 		const orangeId = getColorId("orange");
 
 		console.log("✅ Lookup tables loaded\n");

@@ -24,14 +24,14 @@ export const attachPetShelterContext = async (req: Request, res: Response, next:
 		// Fetch pet to get shelter ID
 		const petResult = await petService.findById(petId);
 
-		if (!petResult.success || !petResult.responseObject) {
+		if (!petResult.success || !petResult.data) {
 			const response = ServiceResponse.failure("Pet not found", null, StatusCodes.NOT_FOUND);
 			res.status(response.statusCode).send(response);
 			return;
 		}
 
 		// Attach shelter ID to params so authorize middleware can use it
-		req.params.shelterId = petResult.responseObject.shelterId.toString();
+		req.params.shelterId = petResult.data.shelterId.toString();
 
 		next();
 	} catch (_error) {
@@ -67,25 +67,25 @@ export const attachAdoptionRequestShelterContext = async (
 		// Fetch adoption request to get pet ID
 		const adoptionRequestResult = await adoptionRequestService.findById(adoptionRequestId);
 
-		if (!adoptionRequestResult.success || !adoptionRequestResult.responseObject) {
+		if (!adoptionRequestResult.success || !adoptionRequestResult.data) {
 			const response = ServiceResponse.failure("Adoption Request not found", null, StatusCodes.NOT_FOUND);
 			res.status(response.statusCode).send(response);
 			return;
 		}
 
-		const petId = adoptionRequestResult.responseObject.petId;
+		const petId = adoptionRequestResult.data.petId;
 
 		// Fetch pet to get shelter ID
 		const petResult = await petService.findById(petId);
 
-		if (!petResult.success || !petResult.responseObject) {
+		if (!petResult.success || !petResult.data) {
 			const response = ServiceResponse.failure("Pet not found", null, StatusCodes.NOT_FOUND);
 			res.status(response.statusCode).send(response);
 			return;
 		}
 
 		// Attach shelter ID to params so authorize middleware can use it
-		req.params.shelterId = petResult.responseObject.shelterId.toString();
+		req.params.shelterId = petResult.data.shelterId.toString();
 
 		next();
 	} catch (_error) {

@@ -10,6 +10,8 @@ const rateLimiter = rateLimit({
 	standardHeaders: true,
 	windowMs: 15 * 60 * env.COMMON_RATE_LIMIT_WINDOW_MS,
 	keyGenerator: (req: Request) => ipKeyGenerator(req.ip as string),
+	// Skip rate limiting in development mode
+	skip: () => env.isDevelopment,
 });
 
 export default rateLimiter;

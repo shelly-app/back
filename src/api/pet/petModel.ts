@@ -12,6 +12,27 @@ export const PetColorSchema = z.object({
 	color: z.string(),
 });
 
+// Lookup schemas for nested objects
+export const PetSpeciesSchema = z.object({
+	id: z.number(),
+	species: z.string(),
+});
+
+export const SexSchema = z.object({
+	id: z.number(),
+	sex: z.string(),
+});
+
+export const PetStatusSchema = z.object({
+	id: z.number(),
+	status: z.string(),
+});
+
+export const PetSizeSchema = z.object({
+	id: z.number(),
+	size: z.string(),
+});
+
 // Pet with all related data
 export type Pet = z.infer<typeof PetSchema>;
 export const PetSchema = z.object({
@@ -19,10 +40,10 @@ export const PetSchema = z.object({
 	name: z.string(),
 	birthdate: z.string().nullable(),
 	breed: z.string().nullable(),
-	speciesId: z.number(),
-	sexId: z.number(),
-	statusId: z.number(),
-	sizeId: z.number(),
+	species: PetSpeciesSchema,
+	sex: SexSchema,
+	status: PetStatusSchema,
+	size: PetSizeSchema,
 	description: z.string().nullable(),
 	shelterId: z.number(),
 	colors: z.array(PetColorSchema),
@@ -40,6 +61,38 @@ export type PetDetail = z.infer<typeof PetDetailSchema>;
 export const PetDetailSchema = PetSchema.extend({
 	events: z.array(EventSchema),
 	vaccinations: z.array(VaccinationWithVaccineNameSchema),
+});
+
+// Pet list item (simplified response for GET /pets)
+export type PetListItem = z.infer<typeof PetListItemSchema>;
+export const PetListItemSchema = z.object({
+	id: z.number(),
+	name: z.string(),
+	species: z.string(),
+	breed: z.string().nullable(),
+	status: z.string(),
+	profilePhotoUrl: z.string().nullable(),
+});
+
+// Pet detail response (complete info for GET /pets/:id)
+export type PetDetailResponse = z.infer<typeof PetDetailResponseSchema>;
+export const PetDetailResponseSchema = z.object({
+	id: z.number(),
+	name: z.string(),
+	species: z.string(),
+	breed: z.string().nullable(),
+	status: z.string(),
+	birthdate: z.string().nullable(),
+	sex: z.string(),
+	size: z.string(),
+	description: z.string().nullable(),
+	profilePhotoUrl: z.string().nullable(),
+	colors: z.array(z.string()),
+	photos: z.array(z.string()),
+	events: z.array(EventSchema),
+	vaccinations: z.array(VaccinationWithVaccineNameSchema),
+	createdAt: z.date(),
+	updatedAt: z.date(),
 });
 
 // Input Validation for 'GET pets' endpoint
